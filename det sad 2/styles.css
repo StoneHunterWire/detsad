@@ -43,7 +43,7 @@ body {
 }
 
 body::before {
-  content: "🍒\A🏠\A⭐\A🌸\A🎈\A🦋\A🍎\A🌈\A🐣\A🎨\A🌻\A🎀\A🐱\A🍰\A🏡\A🌟\A🎶\A🐞\A🍊\A🦄\A🍒\A🏠\A⭐\A🌸\A🎈\A🦋\A🍎\A🌈\A🐣\A🎨\A🌻\A🎀\A🐱\A🍰\A🏡\A🌟\A🎶\A🐞\A🍊\A🦄";
+  content: "🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄";
   position: absolute;
   left: 0;
   top: 0;
@@ -51,18 +51,24 @@ body::before {
   min-width: 80px;
   height: 100%;
   pointer-events: none;
-  font-size: 24px;
-  line-height: 2.2;
+  font-size: 22px;
+  line-height: 1.8;
+  word-spacing: 4px;
+  letter-spacing: 6px;
   overflow: hidden;
   opacity: 0.18;
   z-index: 0;
-  white-space: pre-wrap;
+  white-space: normal;
+  overflow-wrap: break-word;
   text-align: center;
-  letter-spacing: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: center;
 }
 
 body::after {
-  content: "🌻\A🎀\A🐱\A🍰\A🏡\A🌟\A🎶\A🐞\A🍊\A🦄\A🍒\A🏠\A⭐\A🌸\A🎈\A🦋\A🍎\A🌈\A🐣\A🎨\A🌻\A🎀\A🐱\A🍰\A🏡\A🌟\A🎶\A🐞\A🍊\A🦄\A🍒\A🏠\A⭐\A🌸\A🎈\A🦋\A🍎\A🌈\A🐣\A🎨";
+  content: "🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄";
   position: absolute;
   right: 0;
   top: 0;
@@ -70,14 +76,20 @@ body::after {
   min-width: 80px;
   height: 100%;
   pointer-events: none;
-  font-size: 24px;
-  line-height: 2.2;
+  font-size: 22px;
+  line-height: 1.8;
+  word-spacing: 4px;
+  letter-spacing: 6px;
   overflow: hidden;
   opacity: 0.18;
   z-index: 0;
-  white-space: pre-wrap;
+  white-space: normal;
+  overflow-wrap: break-word;
   text-align: center;
-  letter-spacing: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: center;
 }
 
 a {
@@ -1885,7 +1897,8 @@ html.theme-dark body::after {
   body::before,
   body::after {
     width: 60px;
-    font-size: 20px;
+    font-size: 18px;
+    letter-spacing: 2px;
   }
 }
 
