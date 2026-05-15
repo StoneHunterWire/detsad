@@ -44,11 +44,12 @@ body {
 
 body::before {
   content: "🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄";
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
-  bottom: 0;
-  width: 120px;
+  width: calc((100% - 1160px) / 2 - 20px);
+  min-width: 80px;
+  height: 100%;
   pointer-events: none;
   font-size: 22px;
   line-height: 2.4;
@@ -65,11 +66,12 @@ body::before {
 
 body::after {
   content: "🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄 🍒 🏠 ⭐ 🌸 🎈 🦋 🍎 🌈 🐣 🎨 🌻 🎀 🐱 🍰 🏡 🌟 🎶 🐞 🍊 🦄";
-  position: fixed;
+  position: absolute;
   right: 0;
   top: 0;
-  bottom: 0;
-  width: 120px;
+  width: calc((100% - 1160px) / 2 - 20px);
+  min-width: 80px;
+  height: 100%;
   pointer-events: none;
   font-size: 22px;
   line-height: 2.4;
@@ -1888,7 +1890,7 @@ html.theme-dark body::after {
 @media (max-width: 1100px) {
   body::before,
   body::after {
-    width: 80px;
+    width: 60px;
     font-size: 18px;
   }
 }
