@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Задания</title>
+  <meta name="description" content="Задания для воспитанников детского сада «Апельсин».">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="theme.js" defer></script>
+</head>
+<body class="is-authenticated role-student">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Детский сад</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <nav class="main-nav main-nav--student">
+          <a href="student-about.html">Главная</a>
+          <a href="student-tasks.html">Задания</a>
+          <a href="student-chat.html">Чат с воспитателем</a>
+          <a href="student-support.html">Поддержка</a>
+        </nav>
+        <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+        <button type="button" id="logout-btn" class="btn btn-logout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section section-alt">
+      <div class="container">
+        <div class="tip-banner">
+          <div class="tip-banner-icon" aria-hidden="true">✨</div>
+          <div>
+            <strong>Совет</strong>
+            <p>Сначала откройте задание, выполните его аккуратно, а если что-то непонятно — напишите воспитателю в чате.</p>
+          </div>
+        </div>
+
+        <div id="tasks-container" class="materials-grid"></div>
+
+        <section id="games-area" class="section">
+          <p id="game-hint" class="form-note" style="margin-bottom: 12px;">Выберите задание сверху, чтобы начать игру.</p>
+
+          <div id="game-numbers" class="game-block" hidden>
+            <h3>Нажми на цифры по порядку</h3>
+            <p>Нажимайте на кнопки с цифрами от 1 до 5 в правильном порядке.</p>
+            <div id="numbers-buttons" class="game-row"></div>
+            <p id="numbers-status" class="game-status"></p>
+          </div>
+
+          <div id="game-colors" class="game-block" hidden>
+            <h3>Соотнеси цвет и его название</h3>
+            <p>Для каждого цвета выберите правильное название из списка.</p>
+            <div class="game-row">
+              <div class="color-row">
+                <span class="color-swatch" style="background: red;"></span>
+                <select class="color-select">
+                  <option value="">Выберите название</option>
+                  <option value="красный">Красный</option>
+                  <option value="синий">Синий</option>
+                  <option value="зелёный">Зелёный</option>
+                  <option value="жёлтый">Жёлтый</option>
+                </select>
+              </div>
+              <div class="color-row">
+                <span class="color-swatch" style="background: blue;"></span>
+                <select class="color-select">
+                  <option value="">Выберите название</option>
+                  <option value="красный">Красный</option>
+                  <option value="синий">Синий</option>
+                  <option value="зелёный">Зелёный</option>
+                  <option value="жёлтый">Жёлтый</option>
+                </select>
+              </div>
+              <div class="color-row">
+                <span class="color-swatch" style="background: green;"></span>
+                <select class="color-select">
+                  <option value="">Выберите название</option>
+                  <option value="красный">Красный</option>
+                  <option value="синий">Синий</option>
+                  <option value="зелёный">Зелёный</option>
+                  <option value="жёлтый">Жёлтый</option>
+                </select>
+              </div>
+              <div class="color-row">
+                <span class="color-swatch" style="background: yellow;"></span>
+                <select class="color-select">
+                  <option value="">Выберите название</option>
+                  <option value="красный">Красный</option>
+                  <option value="синий">Синий</option>
+                  <option value="зелёный">Зелёный</option>
+                  <option value="жёлтый">Жёлтый</option>
+                </select>
+              </div>
+            </div>
+            <button type="button" id="check-colors" class="btn primary game-action">Проверить</button>
+            <p id="colors-status" class="game-status"></p>
+          </div>
+
+          <div id="game-letters" class="game-block" hidden>
+            <h3>Вставь пропущенные буквы в слова</h3>
+            <p>Введите пропущенные буквы, чтобы получились правильные слова.</p>
+            <div class="game-row letters-row">
+              <span>М_ШИНА</span>
+              <input type="text" maxlength="1" class="letter-input" data-answer="А">
+            </div>
+            <div class="game-row letters-row">
+              <span>С_БАКА</span>
+              <input type="text" maxlength="1" class="letter-input" data-answer="О">
+            </div>
+            <div class="game-row letters-row">
+              <span>ЁЖ_К</span>
+              <input type="text" maxlength="1" class="letter-input" data-answer="И">
+            </div>
+            <button type="button" id="check-letters" class="btn primary game-action">Проверить</button>
+            <p id="letters-status" class="game-status"></p>
+          </div>
+
+          <div id="game-pairs" class="game-block" hidden>
+            <h3>Соедини пары: большие смайлики</h3>
+            <p>Нажми сначала один смайлик, потом второй — они должны быть парой (например, собака и косточка).</p>
+            <div id="pairs-grid" class="pairs-grid" role="group" aria-label="Пары смайликов"></div>
+            <p id="pairs-status" class="game-status"></p>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Раздел с заданиями для воспитанников.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес, телефон и официальный сайт можно указать здесь.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Раздел «Задания»</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const STORAGE_KEY_USER = 'mbouApelsinUser';
+      const STORAGE_KEY_GAMES = 'mbouApelsinGames';
+      const STORAGE_KEY_COMPLETED = 'mbouApelsinCompletedGames';
+      const STORAGE_KEY_FILE_TASKS = 'mbouApelsinFileTasks';
+
+      const GAME_TITLES = {
+        numbers: 'Нажми на цифры по порядку',
+        colors: 'Соотнеси цвет и его название',
+        letters: 'Вставь пропущенные буквы в слова',
+        pairs: 'Соедини пары: большие смайлики'
+      };
+
+      function setYear() {
+        const yearEl = document.getElementById('year');
+        if (yearEl) {
+          yearEl.textContent = new Date().getFullYear();
+        }
+      }
+
+      function loadUser() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function loadGames() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_GAMES);
+          return raw ? JSON.parse(raw) : { yasel: [], middle: [], senior: [] };
+        } catch (e) {
+          return { yasel: [], middle: [], senior: [] };
+        }
+      }
+
+      function loadCompleted() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_COMPLETED);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveCompleted(items) {
+        try {
+          localStorage.setItem(STORAGE_KEY_COMPLETED, JSON.stringify(items));
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      function markCompleted(user, gameId, extra) {
+        if (!user || !user.id || !gameId) return;
+        const all = loadCompleted();
+        const exists = all.some(function (item) {
+          return item.studentId === user.id && item.gameId === gameId;
+        });
+        if (exists) return;
+        const record = {
+          studentId: user.id,
+          fullName: user.fullName || '',
+          group: user.group || '',
+          gameId: gameId,
+          completedAt: Date.now()
+        };
+        if (extra && typeof extra === 'object') {
+          if (extra.assignmentTitle) record.assignmentTitle = extra.assignmentTitle;
+        }
+        all.push(record);
+        saveCompleted(all);
+        const title = (extra && extra.assignmentTitle) || GAME_TITLES[gameId] || gameId;
+        alert('Задание «' + title + '» выполнено и отправлено воспитателю.');
+      }
+
+      function renderTasks(user, games) {
+        const tasksContainer = document.getElementById('tasks-container');
+        if (!tasksContainer) return;
+        tasksContainer.innerHTML = '';
+
+        const groupId = user.group;
+        const gameList = (games && games[groupId]) || [];
+
+        const fileTasksAll = (function () {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY_FILE_TASKS);
+            return raw ? JSON.parse(raw) : { yasel: [], middle: [], senior: [] };
+          } catch (e) {
+            return { yasel: [], middle: [], senior: [] };
+          }
+        })();
+        const fileTasks = (fileTasksAll && fileTasksAll[groupId]) || [];
+
+        const completed = loadCompleted().filter(function (item) {
+          return item.studentId === user.id;
+        }).map(function (item) { return item.gameId; });
+
+        const availableGames = gameList.filter(function (id) {
+          return completed.indexOf(id) === -1;
+        });
+
+        const availableFileTasks = fileTasks.filter(function (task) {
+          return completed.indexOf(task.id) === -1;
+        });
+
+        if (!availableGames.length && !availableFileTasks.length) {
+          const p = document.createElement('p');
+          p.textContent = 'Вы выполнили все доступные задания. Молодец!';
+          tasksContainer.appendChild(p);
+          return;
+        }
+
+        availableGames.forEach(function (id) {
+          const card = document.createElement('article');
+          card.className = 'material-card';
+          const badge = document.createElement('span');
+          badge.className = 'badge badge-green';
+          badge.textContent = 'Мини‑игра';
+          const h3 = document.createElement('h3');
+          h3.textContent = GAME_TITLES[id] || id;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn primary game-action';
+          btn.textContent = 'Играть';
+          btn.addEventListener('click', function () {
+            showGame(id);
+          });
+          card.appendChild(badge);
+          card.appendChild(h3);
+          card.appendChild(btn);
+          tasksContainer.appendChild(card);
+        });
+
+        availableFileTasks.forEach(function (task) {
+          const card = document.createElement('article');
+          card.className = 'material-card';
+          const badge = document.createElement('span');
+          badge.className = 'badge badge-blue';
+          badge.textContent = 'Файл';
+          const h3 = document.createElement('h3');
+          h3.textContent = task.title || 'Задание с файлом';
+          const p = document.createElement('p');
+          p.textContent = task.description || 'Задание с прикреплённым файлом.';
+
+          const actions = document.createElement('div');
+          actions.className = 'game-row';
+
+          if (task.fileDataUrl && task.fileName) {
+            const link = document.createElement('a');
+            link.href = task.fileDataUrl;
+            link.download = task.fileName;
+            link.className = 'link';
+            link.textContent = 'Скачать файл';
+            actions.appendChild(link);
+          }
+
+          const doneBtn = document.createElement('button');
+          doneBtn.type = 'button';
+          doneBtn.className = 'btn primary game-action';
+          doneBtn.textContent = 'Выполнено';
+          doneBtn.addEventListener('click', function () {
+            markCompleted(user, task.id, { assignmentTitle: task.title || 'Задание с файлом' });
+            const currentGames = loadGames();
+            renderTasks(user, currentGames);
+          });
+          actions.appendChild(doneBtn);
+
+          card.appendChild(badge);
+          card.appendChild(h3);
+          card.appendChild(p);
+          card.appendChild(actions);
+          tasksContainer.appendChild(card);
+        });
+      }
+
+      function showGame(gameId) {
+        const all = ['numbers', 'colors', 'letters', 'pairs'];
+        all.forEach(function (id) {
+          const block = document.getElementById('game-' + id);
+          if (block) {
+            block.hidden = id !== gameId;
+          }
+        });
+
+        const hint = document.getElementById('game-hint');
+        if (hint) {
+          hint.textContent = GAME_TITLES[gameId] || 'Мини‑игра';
+        }
+
+        if (gameId === 'pairs') {
+          const grid = document.getElementById('pairs-grid');
+          const status = document.getElementById('pairs-status');
+          if (!grid) return;
+          grid.innerHTML = '';
+          if (status) status.textContent = 'Выбери первый смайлик, затем пару к нему.';
+          const defs = [
+            { a: '🐶', b: '🦴' },
+            { a: '🐱', b: '🐟' },
+            { a: '🚗', b: '⛽' },
+            { a: '🍼', b: '👶' }
+          ];
+          const cells = [];
+          defs.forEach(function (p) {
+            cells.push({ sym: p.a, mate: p.b });
+            cells.push({ sym: p.b, mate: p.a });
+          });
+          cells.sort(function () { return Math.random() - 0.5; });
+          let firstPick = null;
+          cells.forEach(function (cell) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pairs-game-btn';
+            btn.textContent = cell.sym;
+            btn.setAttribute('data-mate', cell.mate);
+            btn.setAttribute('data-solved', '0');
+            btn.addEventListener('click', function () {
+              if (btn.getAttribute('data-solved') === '1') return;
+              if (!firstPick) {
+                firstPick = btn;
+                btn.classList.add('pairs-picked');
+                return;
+              }
+              if (firstPick === btn) {
+                btn.classList.remove('pairs-picked');
+                firstPick = null;
+                return;
+              }
+              const ok = btn.getAttribute('data-mate') === firstPick.textContent &&
+                firstPick.getAttribute('data-mate') === btn.textContent;
+              if (ok) {
+                firstPick.setAttribute('data-solved', '1');
+                btn.setAttribute('data-solved', '1');
+                firstPick.classList.remove('pairs-picked');
+                firstPick.classList.add('pairs-matched');
+                btn.classList.add('pairs-matched');
+                firstPick.disabled = true;
+                btn.disabled = true;
+                firstPick = null;
+                const left = grid.querySelectorAll('.pairs-game-btn[data-solved=\"0\"]');
+                if (!left.length) {
+                  if (status) status.textContent = 'Отлично! Все пары найдены.';
+                  const user = loadUser();
+                  if (user) {
+                    markCompleted(user, 'pairs', { assignmentTitle: GAME_TITLES.pairs });
+                    renderTasks(user, loadGames());
+                  }
+                } else if (status) {
+                  status.textContent = 'Верно! Ищем следующую пару.';
+                }
+              } else {
+                firstPick.classList.remove('pairs-picked');
+                firstPick = null;
+                if (status) status.textContent = 'Не подходит. Попробуй другую пару.';
+              }
+            });
+            grid.appendChild(btn);
+          });
+          return;
+        }
+
+        if (gameId === 'numbers') {
+          const container = document.getElementById('numbers-buttons');
+          const status = document.getElementById('numbers-status');
+          if (container) {
+            container.innerHTML = '';
+            const nums = [1, 2, 3, 4, 5].sort(function () { return Math.random() - 0.5; });
+            let current = 1;
+            nums.forEach(function (n) {
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.textContent = String(n);
+              btn.className = 'btn ghost';
+              btn.addEventListener('click', function () {
+                if (n === current) {
+                  btn.disabled = true;
+                  current += 1;
+                  if (current > 5) {
+                    if (status) status.textContent = 'Отлично! Ты нажал(а) все цифры по порядку.';
+                    const user = loadUser();
+                    if (user) {
+                      markCompleted(user, 'numbers', { assignmentTitle: GAME_TITLES['numbers'] });
+                      const games = loadGames();
+                      renderTasks(user, games);
+                    }
+                  } else {
+                    if (status) status.textContent = 'Теперь нажми цифру ' + current + '.';
+                  }
+                } else {
+                  if (status) status.textContent = 'Попробуй ещё раз. Нужно нажимать по порядку.';
+                }
+              });
+              container.appendChild(btn);
+            });
+            if (status) status.textContent = 'Начни с цифры 1.';
+          }
+        }
+      }
+
+      function init() {
+        const user = loadUser();
+        if (!user || user.role !== 'student') {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        setYear();
+
+        const games = loadGames();
+        renderTasks(user, games);
+
+        // Логика игр «цвета» и «буквы»
+        const checkColors = document.getElementById('check-colors');
+        if (checkColors) {
+          checkColors.addEventListener('click', function () {
+            const selects = document.querySelectorAll('.color-select');
+            const answers = ['красный', 'синий', 'зелёный', 'жёлтый'];
+            let correct = 0;
+            selects.forEach(function (sel, index) {
+              if (sel.value === answers[index]) correct += 1;
+            });
+            const status = document.getElementById('colors-status');
+            if (status) {
+              if (correct === answers.length) {
+                status.textContent = 'Здорово! Все цвета подобраны правильно.';
+                markCompleted(user, 'colors', { assignmentTitle: GAME_TITLES['colors'] });
+                renderTasks(user, games);
+              } else {
+                status.textContent = 'Правильных ответов: ' + correct + ' из ' + answers.length + '. Попробуй ещё раз.';
+              }
+            }
+          });
+        }
+
+        const checkLetters = document.getElementById('check-letters');
+        if (checkLetters) {
+          checkLetters.addEventListener('click', function () {
+            const inputs = document.querySelectorAll('.letter-input');
+            let total = 0;
+            let correct = 0;
+            inputs.forEach(function (input) {
+              const answer = (input.getAttribute('data-answer') || '').toUpperCase();
+              const value = (input.value || '').toUpperCase();
+              total += 1;
+              if (value === answer) {
+                correct += 1;
+              }
+            });
+            const status = document.getElementById('letters-status');
+            if (status) {
+              if (correct === total) {
+                status.textContent = 'Отлично! Все буквы вставлены верно.';
+                markCompleted(user, 'letters', { assignmentTitle: GAME_TITLES['letters'] });
+                renderTasks(user, games);
+              } else {
+                status.textContent = 'Правильных ответов: ' + correct + ' из ' + total + '. Попробуй ещё раз.';
+              }
+            }
+          });
+        }
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem(STORAGE_KEY_USER);
+            window.location.href = 'index.html';
+          });
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>
+

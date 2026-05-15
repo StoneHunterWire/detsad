@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Главная</title>
+  <meta name="description" content="Главная страница детского сада «Апельсин»: объявления, события и о саде.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="announcements.js" defer></script>
+  <script src="theme.js" defer></script>
+</head>
+<body class="is-authenticated role-student">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Детский сад</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <nav class="main-nav main-nav--student">
+          <a href="student-about.html">Главная</a>
+          <a href="student-tasks.html">Задания</a>
+          <a href="student-chat.html">Чат с воспитателем</a>
+          <a href="student-support.html">Поддержка</a>
+        </nav>
+        <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+        <button type="button" id="logout-btn" class="btn btn-logout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-text">
+          <div class="hero-kicker">Детский сад с характером</div>
+          <h1>Добро пожаловать в «Апельсин»</h1>
+          <p>
+            Это наш детский сад — тёплое и уютное место, где дети играют, узнают новое,
+            находят друзей и каждый день делают маленькие открытия.
+          </p>
+          <div class="hero-pills">
+            <span class="pill">Игра • Обучение • Забота</span>
+            <span class="pill">Задания онлайн</span>
+            <span class="pill">Чат с воспитателем</span>
+          </div>
+        </div>
+        <div class="hero-emblem-wrap" aria-hidden="true">
+          <img class="hero-emblem" src="assets/logo.png" alt="" width="280" height="280" decoding="async">
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tight">
+      <div class="container">
+        <div class="highlight-strip">
+          <div>
+            <strong>Сегодня в «Апельсине»</strong>
+            <span>Загляните в «Задания» — там могут появиться новые игры и материалы от воспитателя.</span>
+          </div>
+          <a class="btn ghost" href="student-tasks.html">Перейти к заданиям</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="news-feed" class="section section-alt">
+      <div class="container">
+        <div id="announcements-root" class="news-feed" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="events-calendar" class="section">
+      <div class="container">
+        <div id="events-root" class="events-calendar-list"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="about-grid">
+          <article class="info-card">
+            <h3>Дружная атмосфера</h3>
+            <p>
+              В группах ребята учатся общаться, помогать друг другу и уважать старших.
+              Каждый ребёнок чувствует себя частью коллектива.
+            </p>
+          </article>
+          <article class="info-card">
+            <h3>Развитие в игре</h3>
+            <p>
+              Занятия проходят в игровой форме: через сказки, эксперименты, творчество и
+              подвижные игры на свежем воздухе.
+            </p>
+          </article>
+          <article class="info-card">
+            <h3>Поддержка родителей</h3>
+            <p>
+              Воспитатели всегда готовы ответить на вопросы, дать рекомендации и предложить
+              задания для совместных занятий дома.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Детский сад, в котором каждый ребёнок — солнечный лучик.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес, телефон и официальный сайт можно указать здесь.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Главная</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const STORAGE_KEY_USER = 'mbouApelsinUser';
+
+      function setYear() {
+        const yearEl = document.getElementById('year');
+        if (yearEl) {
+          yearEl.textContent = new Date().getFullYear();
+        }
+      }
+
+      function loadUser() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function init() {
+        const user = loadUser();
+        if (!user || user.role !== 'student') {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        setYear();
+
+        if (window.MbouAnnouncements) {
+          MbouAnnouncements.seedIfNeeded();
+          var newsRoot = document.getElementById('announcements-root');
+          var eventsRoot = document.getElementById('events-root');
+
+          if (newsRoot) {
+            var news = MbouAnnouncements.loadNews();
+            newsRoot.innerHTML = '';
+            if (!news.length) {
+              var emptyN = document.createElement('p');
+              emptyN.className = 'form-note';
+              emptyN.textContent = 'Пока нет объявлений.';
+              newsRoot.appendChild(emptyN);
+            } else {
+              news.forEach(function (n) {
+                var art = document.createElement('article');
+                MbouAnnouncements.fillNewsCardArticle(art, n);
+                newsRoot.appendChild(art);
+              });
+            }
+          }
+
+          if (eventsRoot) {
+            var events = MbouAnnouncements.loadEvents();
+            eventsRoot.innerHTML = '';
+            if (!events.length) {
+              var emptyE = document.createElement('p');
+              emptyE.className = 'form-note';
+              emptyE.textContent = 'События пока не запланированы.';
+              eventsRoot.appendChild(emptyE);
+            } else {
+              var ul = document.createElement('ul');
+              ul.className = 'events-list';
+              events.forEach(function (ev) {
+                var li = document.createElement('li');
+                li.className = 'events-list-item';
+                var dateStr = ev.date || '';
+                try {
+                  var parts = dateStr.split('-');
+                  if (parts.length === 3) {
+                    var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    dateStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                  }
+                } catch (e2) {
+                  /* keep raw */
+                }
+                var strong = document.createElement('strong');
+                strong.textContent = dateStr;
+                var span = document.createElement('span');
+                span.textContent = ' — ' + (ev.title || '');
+                li.appendChild(strong);
+                li.appendChild(span);
+                if (ev.description) {
+                  var desc = document.createElement('div');
+                  desc.className = 'events-list-desc';
+                  desc.textContent = ev.description;
+                  li.appendChild(desc);
+                }
+                ul.appendChild(li);
+              });
+              eventsRoot.appendChild(ul);
+            }
+          }
+        }
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem(STORAGE_KEY_USER);
+            window.location.href = 'index.html';
+          });
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>
+

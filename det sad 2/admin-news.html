@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Новости</title>
+  <meta name="description" content="Управление новостями и событиями.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="announcements.js" defer></script>
+  <script src="theme.js" defer></script>
+</head>
+<body class="is-authenticated role-admin admin-page">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Администратор</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <nav class="admin-subnav" aria-label="Разделы администратора">
+          <a href="admin.html">Учётные записи</a>
+          <a href="admin-news.html" aria-current="page">Новости</a>
+        </nav>
+        <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+        <button type="button" id="logout-btn" class="btn btn-logout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h1 class="admin-page-title">Новости</h1>
+        <p class="form-note admin-page-lead">Добавление и удаление объявлений и событий. Воспитатели могут только публиковать новости с главной страницы кабинета.</p>
+
+        <div class="admin-panels">
+          <div class="info-panel admin-panel">
+            <h2>Новая новость</h2>
+            <form id="admin-news-form" class="task-form">
+              <div class="field">
+                <label for="admin-news-title">Заголовок</label>
+                <input id="admin-news-title" type="text" required maxlength="200" placeholder="Заголовок">
+              </div>
+              <div class="field">
+                <label for="admin-news-body">Текст</label>
+                <textarea id="admin-news-body" rows="4" required maxlength="2000" placeholder="Текст объявления"></textarea>
+              </div>
+              <div class="field">
+                <label for="admin-news-image">Изображение (необязательно)</label>
+                <input id="admin-news-image" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+              </div>
+              <button type="submit" class="btn primary">Добавить новость</button>
+            </form>
+          </div>
+          <div class="info-panel admin-panel">
+            <h2>Новое событие</h2>
+            <form id="admin-event-form" class="task-form">
+              <div class="field">
+                <label for="admin-event-date">Дата</label>
+                <input id="admin-event-date" type="date" required>
+              </div>
+              <div class="field">
+                <label for="admin-event-title">Название</label>
+                <input id="admin-event-title" type="text" required maxlength="200" placeholder="Например: Праздник">
+              </div>
+              <div class="field">
+                <label for="admin-event-desc">Описание (необязательно)</label>
+                <textarea id="admin-event-desc" rows="3" maxlength="2000"></textarea>
+              </div>
+              <button type="submit" class="btn primary">Добавить событие</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="info-panel" style="margin-top: 16px;">
+          <p><strong>Список новостей</strong></p>
+          <ul id="admin-news-list" class="teacher-manage-list"></ul>
+        </div>
+        <div class="info-panel" style="margin-top: 12px;">
+          <p><strong>События</strong></p>
+          <ul id="admin-events-list" class="teacher-manage-list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Управление новостями.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес, телефон и официальный сайт можно указать здесь.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Новости</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var STORAGE_KEY_USER = 'mbouApelsinUser';
+
+      function setYear() {
+        var yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      }
+
+      function loadUser() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function escapeHtml(s) {
+        var div = document.createElement('div');
+        div.textContent = s == null ? '' : String(s);
+        return div.innerHTML;
+      }
+
+      var MAX_ADMIN_IMAGE_BYTES = 900000;
+
+      function fmtDate(ts) {
+        if (!ts) return '';
+        var d = new Date(ts);
+        return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+
+      function renderAdminNewsList() {
+        if (!window.MbouAnnouncements) return;
+        MbouAnnouncements.seedIfNeeded();
+        var news = MbouAnnouncements.loadNews();
+        var newsUl = document.getElementById('admin-news-list');
+        if (!newsUl) return;
+        newsUl.innerHTML = '';
+        if (!news.length) {
+          var li0 = document.createElement('li');
+          li0.textContent = 'Пока нет новостей.';
+          newsUl.appendChild(li0);
+          return;
+        }
+        news.forEach(function (n) {
+          var li = document.createElement('li');
+          li.className = 'teacher-manage-item';
+          var span = document.createElement('span');
+          span.innerHTML = '<strong>' + escapeHtml(n.title) + '</strong> <span class="text-muted">(' + fmtDate(n.createdAt) + ')</span>';
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn btn-small btn-danger-outline';
+          btn.textContent = 'Удалить';
+          btn.addEventListener('click', function () {
+            if (!confirm('Удалить эту новость?')) return;
+            var rest = MbouAnnouncements.loadNews().filter(function (x) { return x.id !== n.id; });
+            MbouAnnouncements.saveNews(rest);
+            renderAdminNewsList();
+          });
+          var pre = document.createElement('div');
+          pre.className = 'teacher-manage-preview';
+          pre.textContent = n.body || '';
+          li.appendChild(span);
+          li.appendChild(btn);
+          li.appendChild(pre);
+          newsUl.appendChild(li);
+        });
+      }
+
+      function renderAdminEventsList() {
+        if (!window.MbouAnnouncements) return;
+        MbouAnnouncements.seedIfNeeded();
+        var events = MbouAnnouncements.loadEvents();
+        var evUl = document.getElementById('admin-events-list');
+        if (!evUl) return;
+        evUl.innerHTML = '';
+        if (!events.length) {
+          var li1 = document.createElement('li');
+          li1.textContent = 'Пока нет событий.';
+          evUl.appendChild(li1);
+          return;
+        }
+        events.forEach(function (ev) {
+          var li = document.createElement('li');
+          li.className = 'teacher-manage-item';
+          var span = document.createElement('span');
+          span.innerHTML = '<strong>' + escapeHtml(ev.date) + '</strong> — ' + escapeHtml(ev.title);
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn btn-small btn-danger-outline';
+          btn.textContent = 'Удалить';
+          btn.addEventListener('click', function () {
+            if (!confirm('Удалить это событие?')) return;
+            var rest = MbouAnnouncements.loadEvents().filter(function (x) { return x.id !== ev.id; });
+            MbouAnnouncements.saveEvents(rest);
+            renderAdminEventsList();
+          });
+          var pre = document.createElement('div');
+          pre.className = 'teacher-manage-preview';
+          pre.textContent = ev.description || '';
+          li.appendChild(span);
+          li.appendChild(btn);
+          if (ev.description) li.appendChild(pre);
+          evUl.appendChild(li);
+        });
+      }
+
+      function init() {
+        var user = loadUser();
+        if (!user || user.role !== 'admin') {
+          window.location.href = 'index.html';
+          return;
+        }
+        setYear();
+        MbouAnnouncements.seedIfNeeded();
+        renderAdminNewsList();
+        renderAdminEventsList();
+
+        var newsForm = document.getElementById('admin-news-form');
+        if (newsForm) {
+          newsForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var titleIn = document.getElementById('admin-news-title');
+            var bodyIn = document.getElementById('admin-news-body');
+            var imgIn = document.getElementById('admin-news-image');
+            var title = titleIn ? titleIn.value.trim() : '';
+            var body = bodyIn ? bodyIn.value.trim() : '';
+            if (!title || !body) return;
+            var file = imgIn && imgIn.files ? imgIn.files[0] : null;
+
+            function addNews(imageDataUrl) {
+              var list = MbouAnnouncements.loadNews();
+              list.unshift({
+                id: 'news-' + Date.now(),
+                title: title,
+                body: body,
+                image: imageDataUrl || '',
+                createdAt: Date.now()
+              });
+              MbouAnnouncements.saveNews(list);
+              newsForm.reset();
+              renderAdminNewsList();
+            }
+
+            if (file) {
+              if (file.size > MAX_ADMIN_IMAGE_BYTES) {
+                alert('Файл слишком большой. Выберите изображение до ~900 КБ.');
+                return;
+              }
+              var reader = new FileReader();
+              reader.onload = function () {
+                addNews(reader.result);
+              };
+              reader.readAsDataURL(file);
+            } else {
+              addNews('');
+            }
+          });
+        }
+
+        var eventForm = document.getElementById('admin-event-form');
+        if (eventForm) {
+          eventForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var dateIn = document.getElementById('admin-event-date');
+            var titleIn = document.getElementById('admin-event-title');
+            var descIn = document.getElementById('admin-event-desc');
+            var date = dateIn ? dateIn.value : '';
+            var title = titleIn ? titleIn.value.trim() : '';
+            var description = descIn ? descIn.value.trim() : '';
+            if (!date || !title) return;
+            var list = MbouAnnouncements.loadEvents();
+            list.push({
+              id: 'ev-' + Date.now(),
+              date: date,
+              title: title,
+              description: description,
+              createdAt: Date.now()
+            });
+            MbouAnnouncements.saveEvents(list);
+            eventForm.reset();
+            renderAdminEventsList();
+          });
+        }
+
+        var logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem(STORAGE_KEY_USER);
+            window.location.href = 'index.html';
+          });
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>

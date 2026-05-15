@@ -1,0 +1,11 @@
+{
+  "name": "mbou-apelsin-didactic-site",
+  "version": "1.0.0",
+  "description": "Статический сайт для размещения дидактических материалов МБОУ «Апельсин».",
+  "private": true,
+  "scripts": {
+    "start": "echo \"Откройте index.html в браузере\""
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

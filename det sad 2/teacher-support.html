@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Поддержка</title>
+  <meta name="description" content="Чат со службой поддержки для воспитателей «Апельсин».">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="theme.js" defer></script>
+</head>
+<body class="is-authenticated role-teacher">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Воспитатель</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <nav class="main-nav main-nav--teacher">
+          <a href="teacher-news.html">Главная</a>
+          <a href="teacher-task.html">Задание</a>
+          <a href="teacher-chat-student.html">Чат с учеником</a>
+          <a href="teacher-support.html" aria-current="page">Поддержка</a>
+        </nav>
+        <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+        <button type="button" id="logout-btn" class="btn btn-logout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <p class="form-note" style="margin-bottom: 8px;">Быстрые варианты — нажмите, чтобы отправить текст в чат:</p>
+        <div class="support-quick-row" role="group" aria-label="Быстрые сообщения">
+          <button type="button" class="btn ghost support-quick-btn" data-support-quick="Мой аккаунт взломали">Мой аккаунт взломали</button>
+          <button type="button" class="btn ghost support-quick-btn" data-support-quick="Не получается войти в аккаунт">Не получается войти</button>
+          <button type="button" class="btn ghost support-quick-btn" data-support-quick="Забыл пароль, что делать?">Забыл пароль</button>
+          <button type="button" class="btn ghost support-quick-btn" data-support-quick="На сайте ошибка или страница не открывается">Ошибка на сайте</button>
+          <button type="button" class="btn ghost support-quick-btn" data-support-quick="Нужно удалить мой аккаунт">Удалить аккаунт</button>
+        </div>
+
+        <div class="chat-box support-chat-box">
+          <div class="support-chat-toolbar">
+            <button type="button" id="support-clear-btn" class="btn ghost btn-small">Очистить чат</button>
+          </div>
+          <div class="chat-messages chat-messages--support" id="support-messages">
+            <p class="chat-placeholder">Чат пуст. Выберите быстрый вариант или напишите сообщение ниже.</p>
+          </div>
+          <form id="support-form" class="chat-form">
+            <div class="field">
+              <label for="support-text">Сообщение в поддержку</label>
+              <textarea id="support-text" rows="3" required placeholder="Опишите проблему…"></textarea>
+            </div>
+            <button type="submit" class="btn primary chat-submit">Отправить</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Служба поддержки пользователей сайта.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес, телефон и официальный сайт можно указать здесь.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Поддержка</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var STORAGE_KEY_USER = 'mbouApelsinUser';
+      var STORAGE_KEY_SUPPORT = 'mbouApelsinSupportChatTeacher';
+      var STORAGE_KEY_PARENT_CHAT = 'mbouApelsinParentChat';
+      var AUTO_REPLY = 'Сообщение получено. В рабочее время с вами свяжется оператор. Если речь о взломе или доступе к аккаунту — смените пароль после восстановления доступа и не передавайте данные третьим лицам.';
+      var pendingReplyTimer = null;
+
+      function setYear() {
+        var yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      }
+
+      function loadUser() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function loadMessages() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY_SUPPORT);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveMessages(messages) {
+        try {
+          localStorage.setItem(STORAGE_KEY_SUPPORT, JSON.stringify(messages));
+        } catch (e) {}
+      }
+
+      function renderMessages(container, messages) {
+        container.innerHTML = '';
+        if (!messages.length) {
+          var p = document.createElement('p');
+          p.className = 'chat-placeholder';
+          p.textContent = 'Чат пуст. Выберите быстрый вариант или напишите сообщение ниже.';
+          container.appendChild(p);
+          return;
+        }
+        messages.forEach(function (msg) {
+          var wrapper = document.createElement('div');
+          wrapper.className = 'chat-message-line' + (msg.role === 'support' ? ' chat-message-line--support' : ' chat-message-line--user');
+          var header = document.createElement('div');
+          header.className = 'chat-message-header';
+          header.textContent = msg.role === 'support' ? 'Поддержка' : 'Вы';
+          var text = document.createElement('div');
+          text.textContent = msg.text;
+          wrapper.appendChild(header);
+          wrapper.appendChild(text);
+          container.appendChild(wrapper);
+        });
+      }
+
+      function sendUserMessage(text, messagesEl) {
+        var t = (text || '').trim();
+        if (!t) return;
+        if (pendingReplyTimer) {
+          clearTimeout(pendingReplyTimer);
+          pendingReplyTimer = null;
+        }
+        var msgs = loadMessages();
+        msgs.push({
+          role: 'user',
+          text: t,
+          createdAt: Date.now()
+        });
+        saveMessages(msgs);
+        renderMessages(messagesEl, msgs);
+        pendingReplyTimer = setTimeout(function () {
+          pendingReplyTimer = null;
+          var fresh = loadMessages();
+          fresh.push({
+            role: 'support',
+            text: AUTO_REPLY,
+            createdAt: Date.now()
+          });
+          saveMessages(fresh);
+          renderMessages(messagesEl, fresh);
+        }, 1200);
+      }
+
+      function clearSupportChat(messagesEl) {
+        if (pendingReplyTimer) {
+          clearTimeout(pendingReplyTimer);
+          pendingReplyTimer = null;
+        }
+        saveMessages([]);
+        try {
+          localStorage.removeItem(STORAGE_KEY_PARENT_CHAT);
+        } catch (e) {}
+        if (messagesEl) renderMessages(messagesEl, []);
+      }
+
+      function init() {
+        var user = loadUser();
+        if (!user || user.role !== 'teacher') {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        setYear();
+        var messagesEl = document.getElementById('support-messages');
+        var form = document.getElementById('support-form');
+        var textarea = document.getElementById('support-text');
+
+        if (messagesEl) {
+          renderMessages(messagesEl, loadMessages());
+        }
+
+        document.querySelectorAll('[data-support-quick]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var q = btn.getAttribute('data-support-quick') || '';
+            if (messagesEl && q) sendUserMessage(q, messagesEl);
+          });
+        });
+
+        if (form && textarea && messagesEl) {
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var text = textarea.value.trim();
+            if (!text) return;
+            sendUserMessage(text, messagesEl);
+            textarea.value = '';
+          });
+        }
+
+        var clearBtn = document.getElementById('support-clear-btn');
+        if (clearBtn && messagesEl) {
+          clearBtn.addEventListener('click', function () {
+            if (!confirm('Удалить переписку в поддержке и в чате с учеником?')) return;
+            clearSupportChat(messagesEl);
+          });
+        }
+
+        var logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem(STORAGE_KEY_USER);
+            window.location.href = 'index.html';
+          });
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>

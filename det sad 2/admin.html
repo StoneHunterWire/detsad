@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Панель администратора</title>
+  <meta name="description" content="Управление учётными записями воспитателей и учеников.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="theme.js" defer></script>
+</head>
+<body class="is-authenticated role-admin admin-page">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Администратор</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <nav class="admin-subnav" aria-label="Разделы администратора">
+          <a href="admin.html" aria-current="page">Учётные записи</a>
+          <a href="admin-news.html">Новости</a>
+        </nav>
+        <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+        <button type="button" id="logout-btn" class="btn btn-logout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h1 class="admin-page-title">Учётные записи</h1>
+        <p class="form-note admin-page-lead">Здесь вы создаёте логины и пароли для воспитателей и учеников. Новости и события — на отдельной странице «Новости». Самостоятельная регистрация на сайте отключена.</p>
+
+        <div class="admin-panels">
+          <div class="info-panel admin-panel">
+            <h2>Новый воспитатель</h2>
+            <form id="admin-add-teacher" class="task-form">
+              <div class="field">
+                <label for="new-teacher-name">ФИО</label>
+                <input id="new-teacher-name" type="text" required autocomplete="name" placeholder="Иванова Мария Петровна">
+              </div>
+              <div class="field">
+                <label for="new-teacher-login">Логин</label>
+                <input id="new-teacher-login" type="text" required autocomplete="off" placeholder="Уникальный логин">
+              </div>
+              <div class="field">
+                <label for="new-teacher-password">Пароль</label>
+                <input id="new-teacher-password" type="password" required autocomplete="new-password" placeholder="Пароль для входа">
+              </div>
+              <button type="submit" class="btn primary">Добавить воспитателя</button>
+            </form>
+          </div>
+
+          <div class="info-panel admin-panel">
+            <h2>Новый ученик</h2>
+            <form id="admin-add-student" class="task-form">
+              <div class="field">
+                <label for="new-student-name">ФИО</label>
+                <input id="new-student-name" type="text" required autocomplete="name" placeholder="Иванов Иван Иванович">
+              </div>
+              <div class="field">
+                <label for="new-student-login">Логин</label>
+                <input id="new-student-login" type="text" required autocomplete="off" placeholder="Уникальный логин">
+              </div>
+              <div class="field">
+                <label for="new-student-password">Пароль</label>
+                <input id="new-student-password" type="password" required autocomplete="new-password" placeholder="Пароль для входа">
+              </div>
+              <div class="field">
+                <label for="new-student-group">Группа</label>
+                <select id="new-student-group" required>
+                  <option value="">Выберите группу</option>
+                  <option value="yasel">Ясельная</option>
+                  <option value="middle">Средняя</option>
+                  <option value="senior">Старшая</option>
+                </select>
+              </div>
+              <button type="submit" class="btn primary">Добавить ученика</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="info-panel" style="margin-top: 24px;">
+          <h2>Пользователи</h2>
+          <ul id="admin-users-list" class="admin-users-list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Панель администратора.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес, телефон и официальный сайт можно указать здесь.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Администрирование</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var STORAGE_KEY_USER = 'mbouApelsinUser';
+      var STORAGE_KEY_USERS = 'mbouApelsinUsers';
+
+      var GROUP_LABELS = { yasel: 'Ясельная', middle: 'Средняя', senior: 'Старшая' };
+
+      function setYear() {
+        var yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      }
+
+      function loadUser() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function loadUsers() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY_USERS);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveUsers(users) {
+        try {
+          localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+        } catch (e) {
+          /* ignore */
+        }
+      }
+
+      function ensureSeedAdmin() {
+        var users = loadUsers();
+        var has = users.some(function (u) {
+          return u && u.role === 'admin' && u.login === 'adm';
+        });
+        if (!has) {
+          users.push({
+            id: 'admin-seed',
+            role: 'admin',
+            fullName: 'Администратор',
+            login: 'adm',
+            password: '123'
+          });
+          saveUsers(users);
+        }
+      }
+
+      function loginTaken(users, login, exceptId) {
+        var l = (login || '').trim();
+        return users.some(function (u) {
+          if (!u || u.id === exceptId) return false;
+          return String(u.login) === l;
+        });
+      }
+
+      function renderUserList() {
+        ensureSeedAdmin();
+        var ul = document.getElementById('admin-users-list');
+        if (!ul) return;
+        var users = loadUsers();
+        ul.innerHTML = '';
+        if (!users.length) {
+          var li0 = document.createElement('li');
+          li0.textContent = 'Нет пользователей.';
+          ul.appendChild(li0);
+          return;
+        }
+        users.forEach(function (u) {
+          var li = document.createElement('li');
+          li.className = 'admin-users-item';
+          var roleLabel = u.role === 'teacher' ? 'Воспитатель' : u.role === 'student' ? 'Ученик' : 'Администратор';
+          var extra = '';
+          if (u.role === 'student' && u.group) {
+            extra = ' · ' + (GROUP_LABELS[u.group] || u.group);
+          }
+          var main = document.createElement('div');
+          main.className = 'admin-users-item-main';
+          main.innerHTML = '<strong>' + escapeHtml(roleLabel) + '</strong> — ' +
+            escapeHtml(u.fullName || '—') +
+            ' <span class="text-muted">(' + escapeHtml(u.login) + ')' + escapeHtml(extra) + '</span>';
+          li.appendChild(main);
+          if (u.role !== 'admin') {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-small btn-danger-outline';
+            btn.textContent = 'Удалить';
+            btn.addEventListener('click', function () {
+              if (!confirm('Удалить пользователя «' + (u.login || '') + '»?')) return;
+              var rest = loadUsers().filter(function (x) { return x.id !== u.id; });
+              saveUsers(rest);
+              renderUserList();
+            });
+            li.appendChild(btn);
+          }
+          ul.appendChild(li);
+        });
+      }
+
+      function escapeHtml(s) {
+        var div = document.createElement('div');
+        div.textContent = s == null ? '' : String(s);
+        return div.innerHTML;
+      }
+
+      function init() {
+        ensureSeedAdmin();
+        var user = loadUser();
+        if (!user || user.role !== 'admin') {
+          window.location.href = 'index.html';
+          return;
+        }
+        setYear();
+        renderUserList();
+
+        var tForm = document.getElementById('admin-add-teacher');
+        if (tForm) {
+          tForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var nameIn = document.getElementById('new-teacher-name');
+            var loginIn = document.getElementById('new-teacher-login');
+            var passIn = document.getElementById('new-teacher-password');
+            var fullName = nameIn ? nameIn.value.trim() : '';
+            var login = loginIn ? loginIn.value.trim() : '';
+            var password = passIn ? passIn.value.trim() : '';
+            if (!fullName || !login || !password) return;
+            var users = loadUsers();
+            if (loginTaken(users, login)) {
+              alert('Пользователь с таким логином уже есть. Выберите другой логин.');
+              return;
+            }
+            users.push({
+              id: Date.now(),
+              role: 'teacher',
+              fullName: fullName,
+              login: login,
+              password: password
+            });
+            saveUsers(users);
+            tForm.reset();
+            renderUserList();
+          });
+        }
+
+        var sForm = document.getElementById('admin-add-student');
+        if (sForm) {
+          sForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var nameIn = document.getElementById('new-student-name');
+            var loginIn = document.getElementById('new-student-login');
+            var passIn = document.getElementById('new-student-password');
+            var groupIn = document.getElementById('new-student-group');
+            var fullName = nameIn ? nameIn.value.trim() : '';
+            var login = loginIn ? loginIn.value.trim() : '';
+            var password = passIn ? passIn.value.trim() : '';
+            var group = groupIn ? groupIn.value : '';
+            if (!fullName || !login || !password || !group) return;
+            var users = loadUsers();
+            if (loginTaken(users, login)) {
+              alert('Пользователь с таким логином уже есть. Выберите другой логин.');
+              return;
+            }
+            users.push({
+              id: Date.now(),
+              role: 'student',
+              fullName: fullName,
+              login: login,
+              password: password,
+              group: group
+            });
+            saveUsers(users);
+            sForm.reset();
+            renderUserList();
+          });
+        }
+
+        var logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem(STORAGE_KEY_USER);
+            window.location.href = 'index.html';
+          });
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>

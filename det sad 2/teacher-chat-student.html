@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Чат с учеником</title>
+  <meta name="description" content="Чат воспитателя с учеником детского сада «Апельсин».">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="theme.js" defer></script>
+</head>
+<body class="is-authenticated role-teacher">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Воспитатель</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <nav class="main-nav main-nav--teacher">
+          <a href="teacher-news.html">Главная</a>
+          <a href="teacher-task.html">Задание</a>
+          <a href="teacher-chat-student.html">Чат с учеником</a>
+          <a href="teacher-support.html">Поддержка</a>
+        </nav>
+        <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+        <button type="button" id="logout-btn" class="btn btn-logout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="tip-banner">
+          <div class="tip-banner-icon" aria-hidden="true">🎓</div>
+          <div>
+            <strong>Удобный формат</strong>
+            <p>Коротко и доброжелательно: что получилось хорошо, что попробовать ещё раз и один маленький шаг на следующий раз.</p>
+          </div>
+        </div>
+        <div class="chat-box">
+          <div class="chat-messages" id="chat-student-messages">
+            <p class="chat-placeholder">Чат пока пуст. Здесь будут сообщения от учеников.</p>
+          </div>
+          <form id="chat-student-form" class="chat-form">
+            <div class="field">
+              <label for="chat-student-text">Ваше сообщение</label>
+              <textarea id="chat-student-text" rows="3" required placeholder="Напишите сообщение ученику..."></textarea>
+            </div>
+            <button type="submit" class="btn primary chat-submit">Отправить</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Раздел для общения воспитателя с учеником.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес, телефон и официальный сайт можно указать здесь.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Чат с учеником</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const STORAGE_KEY_USER = 'mbouApelsinUser';
+      const STORAGE_KEY_PARENT_CHAT = 'mbouApelsinParentChat';
+
+      function setYear() {
+        const yearEl = document.getElementById('year');
+        if (yearEl) {
+          yearEl.textContent = new Date().getFullYear();
+        }
+      }
+
+      function loadUser() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function loadMessages() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_PARENT_CHAT);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveMessages(messages) {
+        try {
+          localStorage.setItem(STORAGE_KEY_PARENT_CHAT, JSON.stringify(messages));
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      function groupTitle(code) {
+        if (code === 'yasel') return 'Ясельная группа';
+        if (code === 'middle') return 'Средняя группа';
+        if (code === 'senior') return 'Старшая группа';
+        return '';
+      }
+
+      function renderMessages(container, messages) {
+        container.innerHTML = '';
+        if (!messages.length) {
+          const p = document.createElement('p');
+          p.className = 'chat-placeholder';
+          p.textContent = 'Чат пока пуст. Здесь будут сообщения от учеников.';
+          container.appendChild(p);
+          return;
+        }
+        messages.forEach(function (msg) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'chat-message-line';
+          const header = document.createElement('div');
+          header.className = 'chat-message-header';
+          if (msg.role === 'student' || msg.role === 'parent') {
+            header.textContent = (msg.authorName || 'Ученик') + ' (' + groupTitle(msg.group) + ')';
+          } else {
+            header.textContent = 'Воспитатель ' + (msg.authorName || '');
+          }
+          const text = document.createElement('div');
+          text.textContent = msg.text;
+          wrapper.appendChild(header);
+          wrapper.appendChild(text);
+          container.appendChild(wrapper);
+        });
+      }
+
+      function init() {
+        const user = loadUser();
+        if (!user || user.role !== 'teacher') {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        setYear();
+        const messagesEl = document.getElementById('chat-student-messages');
+        const form = document.getElementById('chat-student-form');
+        const textarea = document.getElementById('chat-student-text');
+        const allMessages = loadMessages();
+        if (messagesEl) {
+          renderMessages(messagesEl, allMessages);
+        }
+
+        if (form && textarea && messagesEl) {
+          form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const text = textarea.value.trim();
+            if (!text) return;
+            const msgs = loadMessages();
+            msgs.push({
+              role: 'teacher',
+              authorName: user.login || 'Воспитатель',
+              group: '',
+              text: text,
+              createdAt: Date.now()
+            });
+            saveMessages(msgs);
+            renderMessages(messagesEl, msgs);
+            textarea.value = '';
+          });
+        }
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem(STORAGE_KEY_USER);
+            window.location.href = 'index.html';
+          });
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>

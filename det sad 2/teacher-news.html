@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Главная</title>
+  <meta name="description" content="Главная страница воспитателя: объявления и события.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="announcements.js" defer></script>
+  <script src="theme.js" defer></script>
+</head>
+<body class="is-authenticated role-teacher">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Воспитатель</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <nav class="main-nav main-nav--teacher">
+          <a href="teacher-news.html">Главная</a>
+          <a href="teacher-task.html">Задание</a>
+          <a href="teacher-chat-student.html">Чат с учеником</a>
+          <a href="teacher-support.html">Поддержка</a>
+        </nav>
+        <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+        <button type="button" id="logout-btn" class="btn btn-logout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container teacher-news-stack">
+        <div class="teacher-news-toolbar">
+          <button type="button" id="open-news-modal-btn" class="btn primary">Опубликовать новость</button>
+          <p class="form-note teacher-news-toolbar-note">Новость появится в ленте у учеников. Удаление и правка списка — у администратора в разделе «Новости».</p>
+        </div>
+
+        <div id="teacher-preview-announcements" class="news-feed" aria-live="polite"></div>
+
+        <div id="teacher-preview-events" class="events-calendar-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="news-modal" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="news-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 id="news-modal-title" class="modal-title">Новая новость</h2>
+        <button type="button" class="btn btn-small btn-logout modal-close" id="close-news-modal-btn" aria-label="Закрыть">×</button>
+      </div>
+      <form id="news-publish-form" class="task-form">
+        <div class="field">
+          <label for="news-title">Заголовок</label>
+          <input id="news-title" type="text" required maxlength="200" placeholder="Например: Завтра утренник">
+        </div>
+        <div class="field">
+          <label for="news-body">Текст</label>
+          <textarea id="news-body" rows="4" required maxlength="2000" placeholder="Краткий текст объявления"></textarea>
+        </div>
+        <div class="field">
+          <label for="news-image">Изображение (необязательно)</label>
+          <input id="news-image" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" id="cancel-news-modal-btn">Отмена</button>
+          <button type="submit" class="btn primary">Опубликовать</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Кабинет воспитателя — главная страница.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес, телефон и официальный сайт можно указать здесь.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Главная</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var STORAGE_KEY_USER = 'mbouApelsinUser';
+      var MAX_IMAGE_BYTES = 900000;
+
+      function setYear() {
+        var yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      }
+
+      function loadUser() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function openNewsModal() {
+        var modal = document.getElementById('news-modal');
+        if (!modal) return;
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+        var first = document.getElementById('news-title');
+        if (first) setTimeout(function () { first.focus(); }, 50);
+      }
+
+      function closeNewsModal() {
+        var modal = document.getElementById('news-modal');
+        if (!modal) return;
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+      }
+
+      function renderFeed() {
+        if (!window.MbouAnnouncements) return;
+        MbouAnnouncements.seedIfNeeded();
+        var newsRoot = document.getElementById('teacher-preview-announcements');
+        var eventsRoot = document.getElementById('teacher-preview-events');
+        var news = MbouAnnouncements.loadNews();
+        var events = MbouAnnouncements.loadEvents();
+
+        if (newsRoot) {
+          newsRoot.innerHTML = '';
+          if (!news.length) {
+            var emptyN = document.createElement('p');
+            emptyN.className = 'form-note';
+            emptyN.textContent = 'Пока нет объявлений.';
+            newsRoot.appendChild(emptyN);
+          } else {
+            news.forEach(function (n) {
+              var art = document.createElement('article');
+              MbouAnnouncements.fillNewsCardArticle(art, n);
+              newsRoot.appendChild(art);
+            });
+          }
+        }
+
+        if (eventsRoot) {
+          eventsRoot.innerHTML = '';
+          if (!events.length) {
+            var emptyE = document.createElement('p');
+            emptyE.className = 'form-note';
+            emptyE.textContent = 'События пока не запланированы.';
+            eventsRoot.appendChild(emptyE);
+          } else {
+            var ul = document.createElement('ul');
+            ul.className = 'events-list';
+            events.forEach(function (ev) {
+              var li = document.createElement('li');
+              li.className = 'events-list-item';
+              var dateStr = ev.date || '';
+              try {
+                var parts = dateStr.split('-');
+                if (parts.length === 3) {
+                  var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                  dateStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                }
+              } catch (e2) {
+                /* keep raw */
+              }
+              var strong = document.createElement('strong');
+              strong.textContent = dateStr;
+              var span = document.createElement('span');
+              span.textContent = ' — ' + (ev.title || '');
+              li.appendChild(strong);
+              li.appendChild(span);
+              if (ev.description) {
+                var desc = document.createElement('div');
+                desc.className = 'events-list-desc';
+                desc.textContent = ev.description;
+                li.appendChild(desc);
+              }
+              ul.appendChild(li);
+            });
+            eventsRoot.appendChild(ul);
+          }
+        }
+      }
+
+      function init() {
+        var user = loadUser();
+        if (!user || user.role !== 'teacher') {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        setYear();
+        renderFeed();
+
+        var openBtn = document.getElementById('open-news-modal-btn');
+        var closeBtn = document.getElementById('close-news-modal-btn');
+        var cancelBtn = document.getElementById('cancel-news-modal-btn');
+        var modal = document.getElementById('news-modal');
+        if (openBtn) openBtn.addEventListener('click', openNewsModal);
+        if (closeBtn) closeBtn.addEventListener('click', closeNewsModal);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeNewsModal);
+        if (modal) {
+          modal.addEventListener('click', function (e) {
+            if (e.target === modal) closeNewsModal();
+          });
+        }
+
+        var newsForm = document.getElementById('news-publish-form');
+        if (newsForm && window.MbouAnnouncements) {
+          newsForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            MbouAnnouncements.seedIfNeeded();
+            var titleIn = document.getElementById('news-title');
+            var bodyIn = document.getElementById('news-body');
+            var imgIn = document.getElementById('news-image');
+            var title = titleIn ? titleIn.value.trim() : '';
+            var body = bodyIn ? bodyIn.value.trim() : '';
+            if (!title || !body) return;
+
+            var file = imgIn && imgIn.files ? imgIn.files[0] : null;
+
+            function publishWithImage(imageDataUrl) {
+              var list = MbouAnnouncements.loadNews();
+              list.unshift({
+                id: 'news-' + Date.now(),
+                title: title,
+                body: body,
+                image: imageDataUrl || '',
+                createdAt: Date.now()
+              });
+              MbouAnnouncements.saveNews(list);
+              newsForm.reset();
+              closeNewsModal();
+              renderFeed();
+            }
+
+            if (file) {
+              if (file.size > MAX_IMAGE_BYTES) {
+                alert('Файл слишком большой для сохранения в браузере. Выберите изображение до ~900 КБ или без сжатия меньшего размера.');
+                return;
+              }
+              var reader = new FileReader();
+              reader.onload = function () {
+                publishWithImage(reader.result);
+              };
+              reader.readAsDataURL(file);
+            } else {
+              publishWithImage('');
+            }
+          });
+        }
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && modal && !modal.hidden) closeNewsModal();
+        });
+
+        var logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem(STORAGE_KEY_USER);
+            window.location.href = 'index.html';
+          });
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>

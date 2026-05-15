@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Дидактический материал</title>
+  <meta name="description" content="Дидактический материал и методические материалы для педагогов и родителей МБОУ «Апельсин»">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="theme.js" defer></script>
+</head>
+<body>
+  <section id="auth-screen" class="auth-screen">
+    <div class="auth-theme-bar">
+      <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+    </div>
+    <div class="container auth-inner">
+      <div class="auth-layout">
+      <div class="auth-card">
+        <h1>Добро пожаловать в «Апельсин»</h1>
+        <p id="auth-description">Вход по логину и паролю. Учётные записи выдаёт администратор учреждения.</p>
+
+        <div class="auth-toggle">
+          <input type="radio" name="authRole" id="auth-role-teacher" checked>
+          <input type="radio" name="authRole" id="auth-role-student">
+          <input type="radio" name="authRole" id="auth-role-admin">
+          <div class="auth-toggle-controls auth-toggle-controls--roles">
+            <label for="auth-role-teacher">Воспитатель</label>
+            <label for="auth-role-student">Ученик</label>
+            <label for="auth-role-admin">Администратор</label>
+          </div>
+        </div>
+        <div class="auth-forms">
+          <form id="teacher-form" class="auth-form auth-form--teacher">
+            <h2>Вход для воспитателей</h2>
+            <div class="field">
+              <label for="teacher-login">Логин</label>
+              <input id="teacher-login" type="text" required autocomplete="username" placeholder="Введите логин">
+            </div>
+            <div class="field">
+              <label for="teacher-password">Пароль</label>
+              <input id="teacher-password" type="password" required autocomplete="current-password" placeholder="Введите пароль">
+            </div>
+            <button type="submit" class="btn primary auth-submit">Войти</button>
+          </form>
+          <form id="student-form" class="auth-form auth-form--student">
+            <h2>Вход для учеников</h2>
+            <div class="field">
+              <label for="student-login">Логин</label>
+              <input id="student-login" type="text" required autocomplete="username" placeholder="Введите логин">
+            </div>
+            <div class="field">
+              <label for="student-password">Пароль</label>
+              <input id="student-password" type="password" required autocomplete="current-password" placeholder="Введите пароль">
+            </div>
+            <button type="submit" class="btn primary auth-submit">Войти</button>
+          </form>
+          <form id="admin-form" class="auth-form auth-form--admin">
+            <h2>Вход для администратора</h2>
+            <div class="field">
+              <label for="admin-login">Логин</label>
+              <input id="admin-login" type="text" required autocomplete="username" placeholder="Логин администратора">
+            </div>
+            <div class="field">
+              <label for="admin-password">Пароль</label>
+              <input id="admin-password" type="password" required autocomplete="current-password" placeholder="Введите пароль">
+            </div>
+            <button type="submit" class="btn primary auth-submit">Войти в панель</button>
+          </form>
+        </div>
+        <p class="auth-note">Данные сохраняются только в этом браузере и используются для настройки вида сайта.</p>
+      </div>
+      <aside class="auth-side">
+        <div class="auth-side-inner">
+          <div class="auth-side-brand">
+            <img class="auth-side-logo" src="assets/logo.png" alt="Эмблема МБОУ «Апельсин»">
+            <div>
+              <div class="auth-side-title">МБОУ «Апельсин»</div>
+              <div class="auth-side-subtitle">Задания, материалы и связь «ученик — воспитатель» в одном месте.</div>
+            </div>
+          </div>
+          <ul class="auth-side-list">
+            <li><span class="auth-side-dot"></span> Мини‑игры и задания по группам</li>
+            <li><span class="auth-side-dot"></span> Файлы и инструкции от воспитателя</li>
+            <li><span class="auth-side-dot"></span> Чат для быстрых вопросов</li>
+          </ul>
+          <div class="auth-side-chips">
+            <span class="chip">ФГОС</span>
+            <span class="chip">Игра обучает</span>
+            <span class="chip">Безопасно для детей</span>
+          </div>
+        </div>
+      </aside>
+      </div>
+    </div>
+  </section>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Дидактический материал</span>
+        </div>
+      </div>
+      <nav class="main-nav main-nav--student">
+        <a href="#hero">Главная</a>
+        <a href="#about">О нас</a>
+        <a href="#materials">Задания</a>
+        <a href="#chat-student">Чат с воспитателем</a>
+      </nav>
+      <nav class="main-nav main-nav--teacher">
+        <a href="#teacher-task">Задание</a>
+        <a href="#chat-student-teacher">Чат с учеником</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="hero" class="hero">
+      <div class="container hero-inner">
+        <div class="hero-text">
+          <h1>Онлайн‑копилка<br>дидактических материалов</h1>
+          <p>
+            Удобный доступ к играм, заданиям и методическим разработкам
+            для педагогов и родителей детского сада «Апельсин».
+          </p>
+          <div class="hero-actions">
+            <a href="#materials" class="btn primary">Перейти к материалам</a>
+            <a href="#about" class="btn ghost">Узнать о сайте</a>
+          </div>
+          <div class="hero-tags">
+            <span>развитие речи</span>
+            <span>математика</span>
+            <span>окружающий мир</span>
+            <span>игры по ФГОС</span>
+          </div>
+        </div>
+        <div class="hero-illustration">
+          <div class="sun-orbit">
+            <div class="sun"></div>
+            <div class="planet planet-1"></div>
+            <div class="planet planet-2"></div>
+            <div class="planet planet-3"></div>
+          </div>
+          <div class="hero-card hero-card--top">
+            <span class="hero-card-label">Готовые карточки</span>
+            <span class="hero-card-text">распечатал и играй</span>
+          </div>
+          <div class="hero-card hero-card--bottom">
+            <span class="hero-card-label">Методические разработки</span>
+            <span class="hero-card-text">для занятий в группах</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section student-only">
+      <div class="container">
+        <div class="about-grid">
+          <article class="info-card">
+            <h3>Для педагогов</h3>
+            <p>
+              Быстрый доступ к авторским разработкам, тематическим неделям, дидактическим играм
+              и шаблонам занятий по ФГОС.
+            </p>
+          </article>
+          <article class="info-card">
+            <h3>Для родителей</h3>
+            <p>
+              Подборки простых и полезных заданий для занятий дома: карточки, игры, упражнения
+              на развитие речи, внимания и мышления.
+            </p>
+          </article>
+          <article class="info-card">
+            <h3>Структурированно и удобно</h3>
+            <p>
+              Материалы разбиты по возрастным группам, направлениям развития и формату:
+              презентации, карточки, сценарии занятий.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="materials" class="section section-alt student-only">
+      <div class="container">
+        <div class="tabs">
+          <input type="radio" name="group" id="group-small" checked>
+          <input type="radio" name="group" id="group-middle">
+          <input type="radio" name="group" id="group-senior">
+          <input type="radio" name="group" id="group-prep">
+
+          <div class="tabs-controls">
+            <label for="group-small">Младшая группа</label>
+            <label for="group-middle">Средняя группа</label>
+            <label for="group-senior">Старшая группа</label>
+            <label for="group-prep">Подготовительная</label>
+          </div>
+
+          <div class="tabs-content">
+            <div class="tab-panel" data-group="small">
+              <div class="materials-grid">
+                <article class="material-card">
+                  <span class="badge">Речь</span>
+                  <h3>Картинки для называния предметов</h3>
+                  <p>Набор карточек для расширения словаря по теме «Игрушки».</p>
+                  <div class="meta">
+                    <span>PDF, A4</span>
+                    <span>Младшая группа</span>
+                  </div>
+                  <a href="#" class="link">Скачать материал</a>
+                </article>
+                <article class="material-card">
+                  <span class="badge badge-green">Математика</span>
+                  <h3>Счёт до 5 в стихах</h3>
+                  <p>Карточки с короткими стихами для знакомства с количеством.</p>
+                  <div class="meta">
+                    <span>PDF, A4</span>
+                    <span>Младшая группа</span>
+                  </div>
+                  <a href="#" class="link">Скачать материал</a>
+                </article>
+              </div>
+            </div>
+
+            <div class="tab-panel" data-group="middle">
+              <div class="materials-grid">
+                <article class="material-card">
+                  <span class="badge">Окружающий мир</span>
+                  <h3>Времена года</h3>
+                  <p>Наглядный материал и игровые задания на тему времён года.</p>
+                  <div class="meta">
+                    <span>Презентация</span>
+                    <span>Средняя группа</span>
+                  </div>
+                  <a href="#" class="link">Скачать материал</a>
+                </article>
+                <article class="material-card">
+                  <span class="badge badge-blue">Мелкая моторика</span>
+                  <h3>Графические диктанты</h3>
+                  <p>Листы для прорисовки узоров по точкам и линиям.</p>
+                  <div class="meta">
+                    <span>PDF, A5</span>
+                    <span>Средняя группа</span>
+                  </div>
+                  <a href="#" class="link">Скачать материал</a>
+                </article>
+              </div>
+            </div>
+
+            <div class="tab-panel" data-group="senior">
+              <div class="materials-grid">
+                <article class="material-card">
+                  <span class="badge badge-purple">Речь</span>
+                  <h3>Составление рассказа по картинке</h3>
+                  <p>Серия сюжетных картинок для развития связной речи.</p>
+                  <div class="meta">
+                    <span>PDF, A4</span>
+                    <span>Старшая группа</span>
+                  </div>
+                  <a href="#" class="link">Скачать материал</a>
+                </article>
+                <article class="material-card">
+                  <span class="badge badge-green">Математика</span>
+                  <h3>Логические цепочки</h3>
+                  <p>Карточки на развитие логического мышления и внимания.</p>
+                  <div class="meta">
+                    <span>PDF, A4</span>
+                    <span>Старшая группа</span>
+                  </div>
+                  <a href="#" class="link">Скачать материал</a>
+                </article>
+              </div>
+            </div>
+
+            <div class="tab-panel" data-group="prep">
+              <div class="materials-grid">
+                <article class="material-card">
+                  <span class="badge badge-blue">Письмо</span>
+                  <h3>Подготовка к письму</h3>
+                  <p>Прописи и задания на ориентировку в строке и клетке.</p>
+                  <div class="meta">
+                    <span>PDF, A4</span>
+                    <span>Подготовительная группа</span>
+                  </div>
+                  <a href="#" class="link">Скачать материал</a>
+                </article>
+                <article class="material-card">
+                  <span class="badge badge-purple">Чтение</span>
+                  <h3>Звуковой анализ слов</h3>
+                  <p>Карточки для анализа звукового состава коротких слов.</p>
+                  <div class="meta">
+                    <span>PDF, A5</span>
+                    <span>Подготовительная группа</span>
+                  </div>
+                  <a href="#" class="link">Скачать материал</a>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="parents" class="section student-only">
+      <div class="container">
+        <div class="parents-grid">
+          <article class="tip-card">
+            <h3>5–10 минут — достаточно</h3>
+            <p>Короткие, но регулярные занятия приносят больше пользы, чем редкие и долгие.</p>
+          </article>
+          <article class="tip-card">
+            <h3>Через игру</h3>
+            <p>Используйте дидактические материалы как часть игры, а не как «урок».</p>
+          </article>
+          <article class="tip-card">
+            <h3>Похвала и поддержка</h3>
+            <p>Отмечайте даже маленькие успехи ребёнка и не сравнивайте его с другими.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="chat-student" class="section student-only">
+      <div class="container">
+        <div class="chat-box">
+          <div class="chat-messages" id="chat-student-messages">
+            <p class="chat-placeholder">Чат пока пуст. Напишите первое сообщение.</p>
+          </div>
+          <form id="chat-student-form" class="chat-form">
+            <div class="field">
+              <label for="chat-student-text">Ваше сообщение</label>
+              <textarea id="chat-student-text" rows="3" required placeholder="Напишите сообщение воспитателю..."></textarea>
+            </div>
+            <button type="submit" class="btn primary chat-submit">Отправить</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="teacher-task" class="section teacher-only">
+      <div class="container">
+        <h2>Задание</h2>
+        <p class="form-note" style="margin-bottom: 16px;">В кабинете воспитателя на странице «Задание» можно сохранить материал с файлом и <strong>опубликовать</strong> мини‑игры для групп.</p>
+        <form id="task-create-form" class="task-form">
+          <div class="field">
+            <label for="task-title">Название задания</label>
+            <input id="task-title" type="text" required placeholder="Например: «Считаем игрушки до 5»">
+          </div>
+          <div class="field">
+            <label for="task-description">Описание / инструкция</label>
+            <textarea id="task-description" rows="3" placeholder="Кратко опишите, что нужно сделать ребёнку."></textarea>
+          </div>
+          <div class="field">
+            <label for="task-group">Рекомендуемая группа</label>
+            <select id="task-group">
+              <option value="">Не выбрано</option>
+              <option value="yasel">Ясельная</option>
+              <option value="middle">Средняя</option>
+              <option value="senior">Старшая</option>
+            </select>
+          </div>
+          <button type="submit" class="btn primary task-submit">Сохранить задание (демо)</button>
+          <p class="form-note">Сейчас форма демонстрационная — данные не отправляются на сервер, а только используются для примера.</p>
+        </form>
+      </div>
+    </section>
+
+    <section id="chat-student-teacher" class="section teacher-only">
+      <div class="container">
+        <div class="chat-box">
+          <div class="chat-messages" id="chat-student-teacher-messages">
+            <p class="chat-placeholder">Чат пока пуст. Здесь будут сообщения от учеников.</p>
+          </div>
+          <form id="chat-student-teacher-form" class="chat-form">
+            <div class="field">
+              <label for="chat-student-teacher-text">Ваше сообщение</label>
+              <textarea id="chat-student-teacher-text" rows="3" required placeholder="Напишите сообщение ученику..."></textarea>
+            </div>
+            <button type="submit" class="btn primary chat-submit">Отправить</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contacts" class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Сайт для размещения дидактических материалов педагогов и рекомендаций для родителей.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес учреждения, телефон и официальный сайт можно указать здесь.</p>
+        <p class="footer-note">* Данный сайт — демонстрационная версия.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Дидактический онлайн‑банк материалов</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const STORAGE_KEY_USER = 'mbouApelsinUser';
+      const STORAGE_KEY_USERS = 'mbouApelsinUsers';
+
+      function setYear() {
+        const yearEl = document.getElementById('year');
+        if (yearEl) {
+          yearEl.textContent = new Date().getFullYear();
+        }
+      }
+
+      function loadUser() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function saveUser(user) {
+        try {
+          localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      function loadUsers() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_USERS);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveUsers(users) {
+        try {
+          localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      function ensureSeedAdmin() {
+        const users = loadUsers();
+        const hasAdmin = users.some(function (u) {
+          return u && u.role === 'admin' && u.login === 'adm';
+        });
+        if (!hasAdmin) {
+          users.push({
+            id: 'admin-seed',
+            role: 'admin',
+            fullName: 'Администратор',
+            login: 'adm',
+            password: '123'
+          });
+          saveUsers(users);
+        }
+      }
+
+      function redirectByRole(user) {
+        if (!user || !user.role) return;
+        if (user.role === 'teacher') {
+          window.location.href = 'teacher-news.html';
+        } else if (user.role === 'student') {
+          window.location.href = 'student-about.html';
+        } else if (user.role === 'admin') {
+          window.location.href = 'admin.html';
+        }
+      }
+
+      function initAuth() {
+        const teacherForm = document.getElementById('teacher-form');
+        const studentForm = document.getElementById('student-form');
+        const adminForm = document.getElementById('admin-form');
+
+        if (teacherForm) {
+          teacherForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const login = ((document.getElementById('teacher-login') || {}).value || '').trim();
+            const password = ((document.getElementById('teacher-password') || {}).value || '').trim();
+            if (!login || !password) {
+              return;
+            }
+            const users = loadUsers();
+            const existing = users.find(function (u) {
+              return u.role === 'teacher' && u.login === login;
+            });
+            if (!existing) {
+              alert('Пользователь с таким логином не найден. Обратитесь к администратору для получения учётной записи.');
+              return;
+            }
+            if (existing.password !== password) {
+              alert('Неверный пароль для данного логина.');
+              return;
+            }
+            saveUser(existing);
+            redirectByRole(existing);
+          });
+        }
+
+        if (studentForm) {
+          studentForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const loginInput = document.getElementById('student-login');
+            const passInput = document.getElementById('student-password');
+            const login = loginInput ? loginInput.value.trim() : '';
+            const password = passInput ? passInput.value.trim() : '';
+            if (!login || !password) {
+              return;
+            }
+            const users = loadUsers();
+            const existing = users.find(function (u) {
+              return u.role === 'student' && u.login === login;
+            });
+            if (!existing) {
+              alert('Пользователь с таким логином не найден. Обратитесь к администратору для получения учётной записи.');
+              return;
+            }
+            if (existing.password !== password) {
+              alert('Неверный пароль.');
+              return;
+            }
+            saveUser(existing);
+            redirectByRole(existing);
+          });
+        }
+
+        if (adminForm) {
+          adminForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const login = ((document.getElementById('admin-login') || {}).value || '').trim();
+            const password = ((document.getElementById('admin-password') || {}).value || '').trim();
+            if (!login || !password) {
+              return;
+            }
+            ensureSeedAdmin();
+            const users = loadUsers();
+            const existing = users.find(function (u) {
+              return u.role === 'admin' && u.login === login;
+            });
+            if (!existing) {
+              alert('Неверный логин или пароль.');
+              return;
+            }
+            if (existing.password !== password) {
+              alert('Неверный пароль.');
+              return;
+            }
+            saveUser(existing);
+            redirectByRole(existing);
+          });
+        }
+
+        const teacherRadio = document.getElementById('auth-role-teacher');
+        const studentRadio = document.getElementById('auth-role-student');
+        const adminRadio = document.getElementById('auth-role-admin');
+        const teacherFormBlock = document.querySelector('.auth-form--teacher');
+        const studentFormBlock = document.querySelector('.auth-form--student');
+        const adminFormBlock = document.querySelector('.auth-form--admin');
+
+        function syncAuthForms() {
+          if (teacherFormBlock) teacherFormBlock.classList.remove('auth-form--active');
+          if (studentFormBlock) studentFormBlock.classList.remove('auth-form--active');
+          if (adminFormBlock) adminFormBlock.classList.remove('auth-form--active');
+          if (teacherRadio && teacherRadio.checked && teacherFormBlock) {
+            teacherFormBlock.classList.add('auth-form--active');
+          } else if (studentRadio && studentRadio.checked && studentFormBlock) {
+            studentFormBlock.classList.add('auth-form--active');
+          } else if (adminRadio && adminRadio.checked && adminFormBlock) {
+            adminFormBlock.classList.add('auth-form--active');
+          }
+        }
+
+        if (teacherRadio && studentRadio && adminRadio) {
+          teacherRadio.addEventListener('change', syncAuthForms);
+          studentRadio.addEventListener('change', syncAuthForms);
+          adminRadio.addEventListener('change', syncAuthForms);
+          syncAuthForms();
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        setYear();
+        ensureSeedAdmin();
+        initAuth();
+        const existingUser = loadUser();
+        if (existingUser) {
+          redirectByRole(existingUser);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
