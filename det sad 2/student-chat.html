@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="assets/logo.png">
-  <title>МБОУ «Апельсин» — Чат с воспитателем</title>
-  <meta name="description" content="Чат ученика с воспитателем детского сада «Апельсин».">
+  <title>МБОУ «Апельсин» — Чат группы</title>
+  <meta name="description" content="Групповой чат ученика с воспитателем детского сада «Апельсин».">
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,8 +43,8 @@
         <div class="tip-banner">
           <div class="tip-banner-icon" aria-hidden="true">💬</div>
           <div>
-            <strong>Помните</strong>
-            <p>Пишите коротко и по делу: тема вопроса, возраст ребёнка и что уже пробовали дома.</p>
+            <strong id="chat-group-title">Чат вашей группы</strong>
+            <p>Здесь общаются все ученики вашей группы с воспитателем. Пишите коротко и по делу.</p>
           </div>
         </div>
         <div class="chat-box">
@@ -77,119 +77,124 @@
     <div class="footer-bottom">
       <div class="container footer-bottom-inner">
         <span>© <span id="year"></span> МБОУ «Апельсин»</span>
-        <span>Чат с воспитателем</span>
+        <span>Чат группы</span>
       </div>
     </div>
   </footer>
 
   <script>
     (function () {
-      const STORAGE_KEY_USER = 'mbouApelsinUser';
-      const STORAGE_KEY_PARENT_CHAT = 'mbouApelsinParentChat';
+      var STORAGE_KEY_USER = 'mbouApelsinUser';
 
-      function setYear() {
-        const yearEl = document.getElementById('year');
-        if (yearEl) {
-          yearEl.textContent = new Date().getFullYear();
-        }
-      }
-
-      function loadUser() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_USER);
-          return raw ? JSON.parse(raw) : null;
-        } catch (e) {
-          return null;
-        }
-      }
-
-      function loadMessages() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_PARENT_CHAT);
-          return raw ? JSON.parse(raw) : [];
-        } catch (e) {
-          return [];
-        }
-      }
-
-      function saveMessages(messages) {
-        try {
-          localStorage.setItem(STORAGE_KEY_PARENT_CHAT, JSON.stringify(messages));
-        } catch (e) {
-          // ignore
-        }
+      function chatKeyForGroup(group) {
+        return 'mbouApelsinGroupChat_' + (group || 'unknown');
       }
 
       function groupTitle(code) {
         if (code === 'yasel') return 'Ясельная группа';
         if (code === 'middle') return 'Средняя группа';
         if (code === 'senior') return 'Старшая группа';
-        return '';
+        return 'Группа';
+      }
+
+      function setYear() {
+        var yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      }
+
+      function loadUser() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY_USER);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function loadMessages(group) {
+        try {
+          var raw = localStorage.getItem(chatKeyForGroup(group));
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveMessages(group, messages) {
+        try {
+          localStorage.setItem(chatKeyForGroup(group), JSON.stringify(messages));
+        } catch (e) {}
       }
 
       function renderMessages(container, messages) {
         container.innerHTML = '';
         if (!messages.length) {
-          const p = document.createElement('p');
+          var p = document.createElement('p');
           p.className = 'chat-placeholder';
           p.textContent = 'Чат пока пуст. Напишите первое сообщение.';
           container.appendChild(p);
           return;
         }
         messages.forEach(function (msg) {
-          const wrapper = document.createElement('div');
+          var wrapper = document.createElement('div');
           wrapper.className = 'chat-message-line';
-          const header = document.createElement('div');
+          var header = document.createElement('div');
           header.className = 'chat-message-header';
-          if (msg.role === 'student' || msg.role === 'parent') {
-            header.textContent = (msg.authorName || 'Ученик') + ' (' + groupTitle(msg.group) + ')';
-          } else {
+          if (msg.role === 'teacher') {
             header.textContent = 'Воспитатель ' + (msg.authorName || '');
+          } else {
+            header.textContent = msg.authorName || 'Ученик';
           }
-          const text = document.createElement('div');
+          var text = document.createElement('div');
           text.textContent = msg.text;
           wrapper.appendChild(header);
           wrapper.appendChild(text);
           container.appendChild(wrapper);
         });
+        container.scrollTop = container.scrollHeight;
       }
 
       function init() {
-        const user = loadUser();
+        var user = loadUser();
         if (!user || user.role !== 'student') {
           window.location.href = 'index.html';
           return;
         }
 
         setYear();
-        const messagesEl = document.getElementById('chat-student-messages');
-        const form = document.getElementById('chat-student-form');
-        const textarea = document.getElementById('chat-student-text');
-        const allMessages = loadMessages();
+
+        var userGroup = user.group || 'unknown';
+        var titleEl = document.getElementById('chat-group-title');
+        if (titleEl) titleEl.textContent = 'Чат: ' + groupTitle(userGroup);
+
+        var messagesEl = document.getElementById('chat-student-messages');
+        var form = document.getElementById('chat-student-form');
+        var textarea = document.getElementById('chat-student-text');
+
         if (messagesEl) {
-          renderMessages(messagesEl, allMessages);
+          renderMessages(messagesEl, loadMessages(userGroup));
         }
 
         if (form && textarea && messagesEl) {
-          form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const text = textarea.value.trim();
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var text = textarea.value.trim();
             if (!text) return;
-            const msgs = loadMessages();
+            var msgs = loadMessages(userGroup);
             msgs.push({
               role: 'student',
               authorName: user.fullName || 'Ученик',
-              group: user.group || '',
+              studentId: user.id,
               text: text,
               createdAt: Date.now()
             });
-            saveMessages(msgs);
+            saveMessages(userGroup, msgs);
             renderMessages(messagesEl, msgs);
             textarea.value = '';
           });
         }
 
-        const logoutBtn = document.getElementById('logout-btn');
+        var logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
           logoutBtn.addEventListener('click', function () {
             localStorage.removeItem(STORAGE_KEY_USER);
@@ -203,4 +208,3 @@
   </script>
 </body>
 </html>
-

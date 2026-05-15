@@ -1,11 +1,9 @@
 /**
- * Новости и события в localStorage.
- * MbouAnnouncements.seedIfNeeded() — события при первом запуске; новости — комплект по умолчанию (см. версию).
+ * Новости в localStorage.
+ * MbouAnnouncements.seedIfNeeded() — новости по умолчанию (см. версию).
  */
 (function (global) {
   var KEY_NEWS = 'mbouApelsinNews';
-  var KEY_EVENTS = 'mbouApelsinEvents';
-  var KEY_SEED = 'mbouApelsinAnnouncementsSeeded';
   var KEY_NEWS_BUNDLE = 'mbouApelsinNewsBundleVersion';
   var NEWS_BUNDLE_VERSION = '3';
 
@@ -26,41 +24,6 @@
     }
   ];
 
-  function demoEvents() {
-    var y = new Date().getFullYear();
-    var m = String(new Date().getMonth() + 1).padStart(2, '0');
-    return [
-      {
-        id: 'demo-ev-1',
-        date: y + '-' + m + '-09',
-        title: 'День семьи',
-        description: 'Утренник для родителей, начало в 9:30.',
-        createdAt: Date.now() - 86400000 * 5
-      },
-      {
-        id: 'demo-ev-2',
-        date: y + '-' + m + '-15',
-        title: 'Тематическая неделя «Весна»',
-        description: 'Экскурсия на участок, наблюдение за распуском почек.',
-        createdAt: Date.now() - 86400000 * 4
-      },
-      {
-        id: 'demo-ev-3',
-        date: y + '-' + m + '-23',
-        title: 'Спортивный праздник',
-        description: 'Все группы — эстафеты и подвижные игры на площадке.',
-        createdAt: Date.now() - 86400000 * 3
-      },
-      {
-        id: 'demo-ev-4',
-        date: y + '-' + m + '-28',
-        title: 'Концерт к 8 Марта',
-        description: 'Подготовительная группа — репетиция утром, выступление после обеда.',
-        createdAt: Date.now() - 86400000 * 2
-      }
-    ];
-  }
-
   function parse(key, fallback) {
     try {
       var raw = localStorage.getItem(key);
@@ -80,14 +43,6 @@
     }
   }
 
-  function saveEvents(items) {
-    try {
-      localStorage.setItem(KEY_EVENTS, JSON.stringify(items));
-    } catch (e) {
-      /* ignore */
-    }
-  }
-
   function applyBundledNewsDefaults() {
     try {
       if (localStorage.getItem(KEY_NEWS_BUNDLE) === NEWS_BUNDLE_VERSION) return;
@@ -100,16 +55,6 @@
 
   function seedIfNeeded() {
     applyBundledNewsDefaults();
-    try {
-      if (localStorage.getItem(KEY_SEED)) return;
-      var events = parse(KEY_EVENTS, []);
-      if (!events.length) {
-        saveEvents(demoEvents());
-      }
-      localStorage.setItem(KEY_SEED, '1');
-    } catch (e) {
-      /* ignore */
-    }
   }
 
   function fillNewsCardArticle(art, n) {
@@ -142,7 +87,6 @@
 
   global.MbouAnnouncements = {
     KEY_NEWS: KEY_NEWS,
-    KEY_EVENTS: KEY_EVENTS,
     seedIfNeeded: seedIfNeeded,
     fillNewsCardArticle: fillNewsCardArticle,
     loadNews: function () {
@@ -150,12 +94,6 @@
         return (b.createdAt || 0) - (a.createdAt || 0);
       });
     },
-    loadEvents: function () {
-      return parse(KEY_EVENTS, []).slice().sort(function (a, b) {
-        return String(a.date).localeCompare(String(b.date));
-      });
-    },
-    saveNews: saveNews,
-    saveEvents: saveEvents
+    saveNews: saveNews
   };
 })(typeof window !== 'undefined' ? window : this);

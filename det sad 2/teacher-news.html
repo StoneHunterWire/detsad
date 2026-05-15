@@ -48,7 +48,7 @@
 
         <div id="teacher-preview-announcements" class="news-feed" aria-live="polite"></div>
 
-        <div id="teacher-preview-events" class="events-calendar-list"></div>
+
       </div>
     </section>
   </main>
@@ -138,9 +138,7 @@
         if (!window.MbouAnnouncements) return;
         MbouAnnouncements.seedIfNeeded();
         var newsRoot = document.getElementById('teacher-preview-announcements');
-        var eventsRoot = document.getElementById('teacher-preview-events');
         var news = MbouAnnouncements.loadNews();
-        var events = MbouAnnouncements.loadEvents();
 
         if (newsRoot) {
           newsRoot.innerHTML = '';
@@ -158,46 +156,6 @@
           }
         }
 
-        if (eventsRoot) {
-          eventsRoot.innerHTML = '';
-          if (!events.length) {
-            var emptyE = document.createElement('p');
-            emptyE.className = 'form-note';
-            emptyE.textContent = 'События пока не запланированы.';
-            eventsRoot.appendChild(emptyE);
-          } else {
-            var ul = document.createElement('ul');
-            ul.className = 'events-list';
-            events.forEach(function (ev) {
-              var li = document.createElement('li');
-              li.className = 'events-list-item';
-              var dateStr = ev.date || '';
-              try {
-                var parts = dateStr.split('-');
-                if (parts.length === 3) {
-                  var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-                  dateStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-                }
-              } catch (e2) {
-                /* keep raw */
-              }
-              var strong = document.createElement('strong');
-              strong.textContent = dateStr;
-              var span = document.createElement('span');
-              span.textContent = ' — ' + (ev.title || '');
-              li.appendChild(strong);
-              li.appendChild(span);
-              if (ev.description) {
-                var desc = document.createElement('div');
-                desc.className = 'events-list-desc';
-                desc.textContent = ev.description;
-                li.appendChild(desc);
-              }
-              ul.appendChild(li);
-            });
-            eventsRoot.appendChild(ul);
-          }
-        }
       }
 
       function init() {

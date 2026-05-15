@@ -28,7 +28,7 @@
         <nav class="main-nav main-nav--teacher">
           <a href="teacher-news.html">Главная</a>
           <a href="teacher-task.html">Задание</a>
-          <a href="teacher-chat-student.html">Чат с учеником</a>
+          <a href="teacher-chat-student.html">Чат с учениками</a>
           <a href="teacher-support.html">Поддержка</a>
         </nav>
         <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
@@ -41,28 +41,7 @@
     <section class="section">
       <div class="container">
         <h1 class="admin-page-title">Задание</h1>
-        <p class="form-note" style="margin-bottom: 20px;">Сохраните задание с файлом как черновик, затем опубликуйте его для группы. Мини‑игры публикуются отдельным блоком ниже.</p>
-
-        <h2 class="teacher-subpage-heading">Материал с файлом</h2>
-        <div class="teacher-hint-grid">
-          <div class="teacher-hint">
-            <h3>Как сделать задание понятным</h3>
-            <ul>
-              <li>Короткое название + 2–3 шага «что сделать».</li>
-              <li>Если нужен файл — приложите карточку/листок в PDF или картинку.</li>
-              <li>Выберите группу — после публикации задание увидят только ученики этой группы.</li>
-            </ul>
-          </div>
-          <div class="teacher-hint teacher-hint--accent">
-            <h3>Быстрый чек‑лист</h3>
-            <ol>
-              <li>Название заполнено</li>
-              <li>Инструкция есть</li>
-              <li>Файл прикреплён (если нужен)</li>
-              <li>Группа выбрана</li>
-            </ol>
-          </div>
-        </div>
+        <p class="form-note" style="margin-bottom: 20px;">Создайте задание и отправьте на модерацию администратору. После одобрения вы сможете опубликовать его для группы.</p>
 
         <form id="task-create-form" class="task-form">
           <div class="field">
@@ -78,23 +57,25 @@
             <input id="task-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.xlsx,.xls,.txt">
           </div>
           <div class="field">
-            <label for="task-group">Рекомендуемая группа</label>
-            <select id="task-group">
+            <label for="task-group">Группа</label>
+            <select id="task-group" required>
               <option value="">Не выбрано</option>
               <option value="yasel">Ясельная</option>
               <option value="middle">Средняя</option>
               <option value="senior">Старшая</option>
             </select>
           </div>
-          <button type="submit" class="btn primary task-submit">Сохранить в черновики</button>
-          <p class="form-note">Черновик не виден ученикам. Опубликуйте его в списке ниже, когда будете готовы.</p>
+          <button type="submit" class="btn primary task-submit">Отправить на модерацию</button>
+          <p class="form-note">Задание будет проверено администратором. После одобрения вы сможете его опубликовать.</p>
         </form>
-        <div class="info-panel" id="draft-tasks-panel">
-          <p><strong>Черновики заданий с файлами</strong></p>
-          <ul id="draft-tasks-list" class="teacher-manage-list"></ul>
+
+        <div class="info-panel" id="moderation-tasks-panel" style="margin-top: 20px;">
+          <p><strong>Мои задания (статус модерации)</strong></p>
+          <ul id="moderation-tasks-list" class="teacher-manage-list"></ul>
         </div>
+
         <div class="info-panel" id="created-tasks-panel" style="margin-top: 14px;">
-          <p><strong>Опубликованные задания с файлами</strong></p>
+          <p><strong>Опубликованные задания</strong></p>
           <ul id="created-tasks-list"></ul>
         </div>
       </div>
@@ -102,16 +83,16 @@
 
     <section class="section section-alt">
       <div class="container">
-        <h2 class="teacher-subpage-heading">Публикация мини‑игр</h2>
+        <h2 class="teacher-subpage-heading">Публикация мини-игр</h2>
         <div class="publish-steps">
-          <div class="publish-step"><span>1</span> Выберите мини‑игру</div>
+          <div class="publish-step"><span>1</span> Выберите мини-игру</div>
           <div class="publish-step"><span>2</span> Укажите группу</div>
           <div class="publish-step"><span>3</span> Нажмите «Опубликовать»</div>
         </div>
 
         <form id="publish-form" class="task-form">
           <div class="field">
-            <label for="game-select">Выберите мини‑игру</label>
+            <label for="game-select">Выберите мини-игру</label>
             <select id="game-select" required>
               <option value="">Не выбрано</option>
               <option value="numbers">Нажми на цифры по порядку</option>
@@ -130,24 +111,11 @@
             </select>
           </div>
           <button type="submit" class="btn primary task-submit">Опубликовать задание</button>
-          <p class="form-note">Опубликованные задания появятся в разделе «Задания» у учеников выбранной группы.</p>
         </form>
 
         <div class="info-panel" id="published-list">
-          <p><strong>Опубликованные мини‑игры по группам:</strong></p>
+          <p><strong>Опубликованные мини-игры по группам:</strong></p>
           <ul id="published-items"></ul>
-        </div>
-
-        <div class="info-panel" id="completion-report-panel">
-          <p><strong>Мини‑отчёт: сколько учеников выполнили каждое задание</strong></p>
-          <div id="completion-stats-wrap" class="completion-stats-wrap"></div>
-          <p class="form-note">Для каждой мини‑игры и каждого файлового задания считается число <em>разных</em> учеников, отметивших выполнение.</p>
-          <button type="button" class="btn ghost" id="export-completed-btn">Скачать список выполненных (.txt)</button>
-        </div>
-
-        <div class="info-panel" id="completed-list">
-          <p><strong>Выполненные задания учениками (подробный список):</strong></p>
-          <ul id="completed-items"></ul>
         </div>
       </div>
     </section>
@@ -173,498 +141,284 @@
   </footer>
 
   <script>
-    (function () {
-      const STORAGE_KEY_USER = 'mbouApelsinUser';
-      const STORAGE_KEY_FILE_TASKS = 'mbouApelsinFileTasks';
-      const STORAGE_KEY_FILE_TASKS_DRAFT = 'mbouApelsinFileTasksDraft';
-      const STORAGE_KEY_GAMES = 'mbouApelsinGames';
-      const STORAGE_KEY_COMPLETED = 'mbouApelsinCompletedGames';
+  (function () {
+    var STORAGE_KEY_USER = 'mbouApelsinUser';
+    var STORAGE_KEY_MODERATION = 'mbouApelsinTaskModeration';
+    var STORAGE_KEY_FILE_TASKS = 'mbouApelsinFileTasks';
+    var STORAGE_KEY_GAMES = 'mbouApelsinGames';
 
-      const GROUP_TITLES = {
-        yasel: 'Ясельная группа',
-        middle: 'Средняя группа',
-        senior: 'Старшая группа'
-      };
+    var GROUP_TITLES = { yasel: 'Ясельная', middle: 'Средняя', senior: 'Старшая' };
+    var GAME_TITLES = {
+      numbers: 'Нажми на цифры по порядку',
+      colors: 'Соотнеси цвет и его название',
+      letters: 'Вставь пропущенные буквы в слова',
+      pairs: 'Соедини пары: большие смайлики'
+    };
 
-      const GAME_TITLES = {
-        numbers: 'Нажми на цифры по порядку',
-        colors: 'Соотнеси цвет и его название',
-        letters: 'Вставь пропущенные буквы в слова',
-        pairs: 'Соедини пары: большие смайлики'
-      };
+    function setYear() {
+      var el = document.getElementById('year');
+      if (el) el.textContent = new Date().getFullYear();
+    }
+    function loadUser() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY_USER)); } catch(e) { return null; }
+    }
+    function loadModeration() {
+      try { var r = localStorage.getItem(STORAGE_KEY_MODERATION); return r ? JSON.parse(r) : []; } catch(e) { return []; }
+    }
+    function saveModeration(list) {
+      try { localStorage.setItem(STORAGE_KEY_MODERATION, JSON.stringify(list)); } catch(e) {}
+    }
+    function loadFileTasks() {
+      try { var r = localStorage.getItem(STORAGE_KEY_FILE_TASKS); return r ? JSON.parse(r) : {yasel:[],middle:[],senior:[]}; } catch(e) { return {yasel:[],middle:[],senior:[]}; }
+    }
+    function saveFileTasks(t) {
+      try { localStorage.setItem(STORAGE_KEY_FILE_TASKS, JSON.stringify(t)); } catch(e) {}
+    }
+    function loadGames() {
+      try { var r = localStorage.getItem(STORAGE_KEY_GAMES); return r ? JSON.parse(r) : {yasel:[],middle:[],senior:[]}; } catch(e) { return {yasel:[],middle:[],senior:[]}; }
+    }
+    function saveGames(g) {
+      try { localStorage.setItem(STORAGE_KEY_GAMES, JSON.stringify(g)); } catch(e) {}
+    }
 
-      function setYear() {
-        const yearEl = document.getElementById('year');
-        if (yearEl) yearEl.textContent = new Date().getFullYear();
+    function renderModerationList(user) {
+      var list = document.getElementById('moderation-tasks-list');
+      if (!list) return;
+      list.innerHTML = '';
+      var all = loadModeration();
+      var mine = all.filter(function(t) { return t.teacherId === user.id; });
+      if (!mine.length) {
+        var li = document.createElement('li');
+        li.textContent = 'Нет заданий. Создайте задание выше.';
+        list.appendChild(li);
+        return;
       }
+      mine.forEach(function(task) {
+        var li = document.createElement('li');
+        li.className = 'teacher-manage-item';
+        var main = document.createElement('div');
+        main.className = 'admin-users-item-main';
+        var statusLabel = '';
+        var statusClass = '';
+        if (task.status === 'pending') { statusLabel = 'На модерации'; statusClass = 'badge'; }
+        else if (task.status === 'approved') { statusLabel = 'Одобрено'; statusClass = 'badge badge-green'; }
+        else if (task.status === 'rejected') { statusLabel = 'Отклонено'; statusClass = 'badge badge-purple'; }
+        main.innerHTML = '<span class="' + statusClass + '">' + statusLabel + '</span> ' +
+          '<strong>' + escapeHtml(task.title) + '</strong> — ' + (GROUP_TITLES[task.group] || '') +
+          (task.fileName ? ' (файл: ' + escapeHtml(task.fileName) + ')' : '');
+        li.appendChild(main);
 
-      function loadUser() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_USER);
-          return raw ? JSON.parse(raw) : null;
-        } catch (e) {
-          return null;
-        }
-      }
+        if (task.status === 'rejected' && task.rejectReason) {
+          var reason = document.createElement('div');
+          reason.className = 'teacher-manage-preview';
+          reason.style.color = '#b91c1c';
+          reason.textContent = 'Причина: ' + task.rejectReason;
+          li.appendChild(reason);
 
-      function loadDraftTasks() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_FILE_TASKS_DRAFT);
-          return raw ? JSON.parse(raw) : [];
-        } catch (e) {
-          return [];
-        }
-      }
-
-      function saveDraftTasks(drafts) {
-        try {
-          localStorage.setItem(STORAGE_KEY_FILE_TASKS_DRAFT, JSON.stringify(drafts));
-        } catch (e) {
-          // ignore
-        }
-      }
-
-      function loadFileTasks() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_FILE_TASKS);
-          return raw ? JSON.parse(raw) : { yasel: [], middle: [], senior: [] };
-        } catch (e) {
-          return { yasel: [], middle: [], senior: [] };
-        }
-      }
-
-      function saveFileTasks(tasks) {
-        try {
-          localStorage.setItem(STORAGE_KEY_FILE_TASKS, JSON.stringify(tasks));
-        } catch (e) {
-          // ignore
-        }
-      }
-
-      function loadGames() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_GAMES);
-          return raw ? JSON.parse(raw) : { yasel: [], middle: [], senior: [] };
-        } catch (e) {
-          return { yasel: [], middle: [], senior: [] };
-        }
-      }
-
-      function saveGames(games) {
-        try {
-          localStorage.setItem(STORAGE_KEY_GAMES, JSON.stringify(games));
-        } catch (e) {
-          // ignore
-        }
-      }
-
-      function loadCompleted() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_COMPLETED);
-          return raw ? JSON.parse(raw) : [];
-        } catch (e) {
-          return [];
-        }
-      }
-
-      function buildFileTaskTitleMap() {
-        const map = {};
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY_FILE_TASKS);
-          if (!raw) return map;
-          const data = JSON.parse(raw);
-          ['yasel', 'middle', 'senior'].forEach(function (g) {
-            (data[g] || []).forEach(function (t) {
-              if (t && t.id) map[t.id] = t.title || 'Задание с файлом';
-            });
-          });
-        } catch (e) {
-          /* ignore */
-        }
-        return map;
-      }
-
-      function labelForCompletion(item, fileTitles) {
-        if (item.assignmentTitle) return item.assignmentTitle;
-        if (GAME_TITLES[item.gameId]) return GAME_TITLES[item.gameId];
-        if (fileTitles[item.gameId]) return fileTitles[item.gameId];
-        return item.gameId || '—';
-      }
-
-      function aggregateByAssignment(completed) {
-        const fileTitles = buildFileTaskTitleMap();
-        const groups = {};
-
-        completed.forEach(function (item) {
-          const gid = item.gameId;
-          if (!gid || item.studentId == null) return;
-          if (!groups[gid]) {
-            groups[gid] = {
-              studentIds: {},
-              sampleTitle: labelForCompletion(item, fileTitles),
-              kind: GAME_TITLES[gid] ? 'Мини‑игра' : 'Файл'
-            };
-          }
-          groups[gid].studentIds[item.studentId] = true;
-          if (!groups[gid].sampleTitle && item.assignmentTitle) {
-            groups[gid].sampleTitle = item.assignmentTitle;
-          }
-        });
-
-        const rows = Object.keys(groups).map(function (gid) {
-          const g = groups[gid];
-          let title = g.sampleTitle || GAME_TITLES[gid] || fileTitles[gid] || gid;
-          return {
-            gameId: gid,
-            title: title,
-            kind: g.kind,
-            count: Object.keys(g.studentIds).length
-          };
-        });
-
-        rows.sort(function (a, b) {
-          if (b.count !== a.count) return b.count - a.count;
-          return a.title.localeCompare(b.title, 'ru');
-        });
-        return rows;
-      }
-
-      function renderCompletionStats(completed) {
-        const wrap = document.getElementById('completion-stats-wrap');
-        if (!wrap) return;
-        const rows = aggregateByAssignment(completed);
-        if (!rows.length) {
-          wrap.innerHTML = '<p class="form-note">Пока нет данных о выполнениях.</p>';
-          return;
-        }
-        const table = document.createElement('table');
-        table.className = 'stats-table';
-        table.innerHTML = '<thead><tr><th>Тип</th><th>Задание</th><th>Учеников</th></tr></thead><tbody></tbody>';
-        const tb = table.querySelector('tbody');
-        rows.forEach(function (r) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = '<td>' + r.kind + '</td><td>' + escapeCell(r.title) + '</td><td><strong>' + r.count + '</strong></td>';
-          tb.appendChild(tr);
-        });
-        wrap.innerHTML = '';
-        wrap.appendChild(table);
-      }
-
-      function escapeCell(s) {
-        return String(s)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-      }
-
-      function buildExportText(completed) {
-        const fileTitles = buildFileTaskTitleMap();
-        const lines = [];
-        lines.push('МБОУ «Апельсин» — список выполненных заданий');
-        lines.push('Сформировано: ' + new Date().toLocaleString('ru-RU'));
-        lines.push('Всего отметок: ' + completed.length);
-        lines.push('');
-
-        const summary = aggregateByAssignment(completed);
-        lines.push('--- Сводка (уникальные ученики по заданиям) ---');
-        if (!summary.length) {
-          lines.push('(пусто)');
-        } else {
-          summary.forEach(function (r) {
-            lines.push('[' + r.kind + '] ' + r.title + ' — ' + r.count + ' чел.');
-          });
-        }
-        lines.push('');
-        lines.push('--- Все отметки ---');
-        const sorted = completed.slice().sort(function (a, b) {
-          return (b.completedAt || 0) - (a.completedAt || 0);
-        });
-        sorted.forEach(function (item) {
-          const title = labelForCompletion(item, fileTitles);
-          const groupTitle = GROUP_TITLES[item.group] || item.group || '—';
-          const when = item.completedAt
-            ? new Date(item.completedAt).toLocaleString('ru-RU')
-            : '—';
-          lines.push(
-            (item.fullName || 'Ученик') +
-              ' | ' + groupTitle +
-              ' | ' + title +
-              ' | ' + when
-          );
-        });
-        return lines.join('\r\n');
-      }
-
-      function triggerDownloadText(filename, text) {
-        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.rel = 'noopener';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-
-      function renderPublishedList(games) {
-        const list = document.getElementById('published-items');
-        if (!list) return;
-        list.innerHTML = '';
-
-        const groups = ['yasel', 'middle', 'senior'];
-        groups.forEach(function (key) {
-          const items = games[key] || [];
-          if (!items.length) return;
-          const li = document.createElement('li');
-          li.textContent = GROUP_TITLES[key] + ': ' +
-            items.map(function (id) { return GAME_TITLES[id] || id; }).join(', ');
-          list.appendChild(li);
-        });
-
-        if (!list.children.length) {
-          const li = document.createElement('li');
-          li.textContent = 'Пока нет опубликованных заданий.';
-          list.appendChild(li);
-        }
-      }
-
-      function renderCompletedList(items) {
-        const list = document.getElementById('completed-items');
-        if (!list) return;
-        list.innerHTML = '';
-        const fileTitles = buildFileTaskTitleMap();
-
-        if (!items.length) {
-          const li = document.createElement('li');
-          li.textContent = 'Пока нет выполненных заданий.';
-          list.appendChild(li);
-          return;
+          var btnFix = document.createElement('button');
+          btnFix.type = 'button';
+          btnFix.className = 'btn btn-small primary';
+          btnFix.textContent = 'Исправить и отправить повторно';
+          btnFix.addEventListener('click', function() { openEditMode(task); });
+          li.appendChild(btnFix);
         }
 
-        const sorted = items.slice().sort(function (a, b) {
-          return b.completedAt - a.completedAt;
-        });
-
-        sorted.forEach(function (item) {
-          const li = document.createElement('li');
-          const groupTitle = GROUP_TITLES[item.group] || '';
-          const title = labelForCompletion(item, fileTitles);
-          li.textContent = (item.fullName || 'Ученик') +
-            (groupTitle ? ' (' + groupTitle + ')' : '') +
-            ' — ' + title;
-          list.appendChild(li);
-        });
-      }
-
-      function renderDraftTasks(drafts) {
-        const list = document.getElementById('draft-tasks-list');
-        if (!list) return;
-        list.innerHTML = '';
-        if (!drafts.length) {
-          const li = document.createElement('li');
-          li.textContent = 'Нет черновиков — заполните форму выше и нажмите «Сохранить в черновики».';
-          list.appendChild(li);
-          return;
-        }
-        drafts.forEach(function (task) {
-          const li = document.createElement('li');
-          li.className = 'draft-task-row';
-          const span = document.createElement('span');
-          span.textContent = (task.title || 'Без названия') + ' — ' +
-            (GROUP_TITLES[task.group] || task.group || '') +
-            (task.fileName ? ' (есть файл)' : '');
-          const btnPub = document.createElement('button');
+        if (task.status === 'approved') {
+          var btnPub = document.createElement('button');
           btnPub.type = 'button';
           btnPub.className = 'btn btn-small primary';
           btnPub.textContent = 'Опубликовать';
-          btnPub.addEventListener('click', function () {
-            publishDraftTask(task.id);
-          });
-          const btnDel = document.createElement('button');
-          btnDel.type = 'button';
-          btnDel.className = 'btn btn-small btn-danger-outline';
-          btnDel.textContent = 'Удалить';
-          btnDel.addEventListener('click', function () {
-            if (!confirm('Удалить этот черновик?')) return;
-            const rest = loadDraftTasks().filter(function (x) { return x.id !== task.id; });
-            saveDraftTasks(rest);
-            renderDraftTasks(rest);
-          });
-          li.appendChild(span);
+          btnPub.addEventListener('click', function() { publishTask(task, user); });
           li.appendChild(btnPub);
-          li.appendChild(btnDel);
-          list.appendChild(li);
-        });
-      }
-
-      function publishDraftTask(draftId) {
-        const drafts = loadDraftTasks();
-        const task = drafts.find(function (x) { return x.id === draftId; });
-        if (!task || !task.group) return;
-        const published = loadFileTasks();
-        const list = published[task.group] || [];
-        list.push({
-          id: task.id,
-          title: task.title,
-          description: task.description,
-          group: task.group,
-          fileName: task.fileName || '',
-          fileDataUrl: task.fileDataUrl || ''
-        });
-        published[task.group] = list;
-        saveFileTasks(published);
-        const rest = drafts.filter(function (x) { return x.id !== draftId; });
-        saveDraftTasks(rest);
-        renderDraftTasks(rest);
-        renderPublishedFileTasks(published);
-        alert('Задание опубликовано для: ' + (GROUP_TITLES[task.group] || task.group) + '.');
-      }
-
-      function renderPublishedFileTasks(tasks) {
-        const list = document.getElementById('created-tasks-list');
-        if (!list) return;
-        list.innerHTML = '';
-
-        const groups = ['yasel', 'middle', 'senior'];
-        let hasAny = false;
-        groups.forEach(function (key) {
-          const items = tasks[key] || [];
-          items.forEach(function (task) {
-            hasAny = true;
-            const li = document.createElement('li');
-            li.textContent = (task.title || 'Без названия') + ' — ' +
-              (GROUP_TITLES[task.group] || '') +
-              (task.fileName ? ' (файл: ' + task.fileName + ')' : '');
-            list.appendChild(li);
-          });
-        });
-
-        if (!hasAny) {
-          const li = document.createElement('li');
-          li.textContent = 'Пока нет опубликованных файловых заданий.';
-          list.appendChild(li);
-        }
-      }
-
-      function init() {
-        const user = loadUser();
-        if (!user || user.role !== 'teacher') {
-          window.location.href = 'index.html';
-          return;
         }
 
-        setYear();
+        list.appendChild(li);
+      });
+    }
 
-        let draftTasks = loadDraftTasks();
-        renderDraftTasks(draftTasks);
+    function openEditMode(task) {
+      document.getElementById('task-title').value = task.title || '';
+      document.getElementById('task-description').value = task.description || '';
+      document.getElementById('task-group').value = task.group || '';
+      var form = document.getElementById('task-create-form');
+      form.setAttribute('data-edit-id', task.id);
+      var btn = form.querySelector('.task-submit');
+      if (btn) btn.textContent = 'Отправить исправленное на модерацию';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
 
-        let fileTasks = loadFileTasks();
-        renderPublishedFileTasks(fileTasks);
+    function publishTask(task, user) {
+      var published = loadFileTasks();
+      var list = published[task.group] || [];
+      list.push({
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        group: task.group,
+        fileName: task.fileName || '',
+        fileDataUrl: task.fileDataUrl || ''
+      });
+      published[task.group] = list;
+      saveFileTasks(published);
 
-        const createForm = document.getElementById('task-create-form');
-        if (createForm) {
-          createForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const titleInput = document.getElementById('task-title');
-            const descInput = document.getElementById('task-description');
-            const groupSelect = document.getElementById('task-group');
-            const fileInput = document.getElementById('task-file');
+      var all = loadModeration();
+      var rest = all.filter(function(t) { return t.id !== task.id; });
+      saveModeration(rest);
+      renderModerationList(user);
+      renderPublishedFileTasks();
+      alert('Задание опубликовано для: ' + (GROUP_TITLES[task.group] || task.group));
+    }
 
-            const title = titleInput ? titleInput.value.trim() : '';
-            const description = descInput ? descInput.value.trim() : '';
-            const group = groupSelect ? groupSelect.value : '';
+    function renderPublishedFileTasks() {
+      var list = document.getElementById('created-tasks-list');
+      if (!list) return;
+      list.innerHTML = '';
+      var tasks = loadFileTasks();
+      var hasAny = false;
+      ['yasel','middle','senior'].forEach(function(key) {
+        (tasks[key]||[]).forEach(function(task) {
+          hasAny = true;
+          var li = document.createElement('li');
+          li.textContent = (task.title||'Без названия') + ' — ' + (GROUP_TITLES[task.group]||'') +
+            (task.fileName ? ' (файл: ' + task.fileName + ')' : '');
+          list.appendChild(li);
+        });
+      });
+      if (!hasAny) {
+        var li = document.createElement('li');
+        li.textContent = 'Пока нет опубликованных заданий.';
+        list.appendChild(li);
+      }
+    }
 
-            if (!title || !group) {
-              alert('Укажите название задания и группу.');
-              return;
-            }
+    function renderPublishedGames(games) {
+      var list = document.getElementById('published-items');
+      if (!list) return;
+      list.innerHTML = '';
+      ['yasel','middle','senior'].forEach(function(key) {
+        var items = games[key] || [];
+        if (!items.length) return;
+        var li = document.createElement('li');
+        li.textContent = GROUP_TITLES[key] + ': ' + items.map(function(id) { return GAME_TITLES[id]||id; }).join(', ');
+        list.appendChild(li);
+      });
+      if (!list.children.length) {
+        var li = document.createElement('li');
+        li.textContent = 'Пока нет опубликованных мини-игр.';
+        list.appendChild(li);
+      }
+    }
 
-            const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+    function escapeHtml(s) {
+      var d = document.createElement('div');
+      d.textContent = s == null ? '' : String(s);
+      return d.innerHTML;
+    }
 
-            function pushDraft(fileDataUrl, fileName) {
-              const id = Date.now().toString();
-              const drafts = loadDraftTasks();
-              drafts.unshift({
-                id: id,
+    function init() {
+      var user = loadUser();
+      if (!user || user.role !== 'teacher') { window.location.href = 'index.html'; return; }
+      setYear();
+
+      renderModerationList(user);
+      renderPublishedFileTasks();
+      renderPublishedGames(loadGames());
+
+      var createForm = document.getElementById('task-create-form');
+      if (createForm) {
+        createForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var title = document.getElementById('task-title').value.trim();
+          var desc = document.getElementById('task-description').value.trim();
+          var group = document.getElementById('task-group').value;
+          var fileInput = document.getElementById('task-file');
+          if (!title || !group) { alert('Укажите название и группу.'); return; }
+
+          var file = fileInput && fileInput.files ? fileInput.files[0] : null;
+          var editId = createForm.getAttribute('data-edit-id');
+
+          function submitTask(fileDataUrl, fileName) {
+            var all = loadModeration();
+            if (editId) {
+              all = all.map(function(t) {
+                if (t.id === editId) {
+                  t.title = title;
+                  t.description = desc;
+                  t.group = group;
+                  t.fileName = fileName || t.fileName;
+                  t.fileDataUrl = fileDataUrl || t.fileDataUrl;
+                  t.status = 'pending';
+                  t.rejectReason = '';
+                  t.updatedAt = Date.now();
+                }
+                return t;
+              });
+            } else {
+              all.unshift({
+                id: 'task-' + Date.now(),
+                teacherId: user.id,
+                teacherName: user.fullName || '',
                 title: title,
-                description: description,
+                description: desc,
                 group: group,
                 fileName: fileName || '',
-                fileDataUrl: fileDataUrl || ''
+                fileDataUrl: fileDataUrl || '',
+                status: 'pending',
+                rejectReason: '',
+                createdAt: Date.now()
               });
-              saveDraftTasks(drafts);
-              draftTasks = drafts;
-              renderDraftTasks(draftTasks);
-              createForm.reset();
-              alert('Черновик сохранён. Когда будете готовы — нажмите «Опубликовать» в списке черновиков.');
             }
+            saveModeration(all);
+            createForm.reset();
+            createForm.removeAttribute('data-edit-id');
+            var btn = createForm.querySelector('.task-submit');
+            if (btn) btn.textContent = 'Отправить на модерацию';
+            renderModerationList(user);
+            alert(editId ? 'Исправленное задание отправлено на повторную модерацию.' : 'Задание отправлено на модерацию администратору.');
+          }
 
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = function () {
-                pushDraft(reader.result, file.name);
-              };
-              reader.readAsDataURL(file);
-            } else {
-              pushDraft('', '');
-            }
-          });
-        }
-
-        const games = loadGames();
-        renderPublishedList(games);
-
-        const completed = loadCompleted();
-        renderCompletionStats(completed);
-        renderCompletedList(completed);
-
-        const exportBtn = document.getElementById('export-completed-btn');
-        if (exportBtn) {
-          exportBtn.addEventListener('click', function () {
-            const data = loadCompleted();
-            const text = buildExportText(data);
-            const stamp = new Date().toISOString().slice(0, 10);
-            triggerDownloadText('apelsin-vypolnennye-' + stamp + '.txt', text);
-          });
-        }
-
-        const publishForm = document.getElementById('publish-form');
-        if (publishForm) {
-          publishForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const gameSelect = document.getElementById('game-select');
-            const groupSelect = document.getElementById('group-select');
-            const gameId = gameSelect ? gameSelect.value : '';
-            const groupId = groupSelect ? groupSelect.value : '';
-            if (!gameId || !groupId) return;
-
-            const current = loadGames();
-            const list = current[groupId] || [];
-            if (list.indexOf(gameId) === -1) {
-              list.push(gameId);
-              current[groupId] = list;
-              saveGames(current);
-              renderPublishedList(current);
-              alert('Задание опубликовано для группы: ' + (GROUP_TITLES[groupId] || groupId));
-            } else {
-              alert('Эта мини‑игра уже опубликована для выбранной группы.');
-            }
-          });
-        }
-
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-          logoutBtn.addEventListener('click', function () {
-            localStorage.removeItem(STORAGE_KEY_USER);
-            window.location.href = 'index.html';
-          });
-        }
+          if (file) {
+            var reader = new FileReader();
+            reader.onload = function() { submitTask(reader.result, file.name); };
+            reader.readAsDataURL(file);
+          } else {
+            submitTask('', '');
+          }
+        });
       }
 
-      document.addEventListener('DOMContentLoaded', init);
-    })();
+      var publishForm = document.getElementById('publish-form');
+      if (publishForm) {
+        publishForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var gameId = document.getElementById('game-select').value;
+          var groupId = document.getElementById('group-select').value;
+          if (!gameId || !groupId) return;
+          var current = loadGames();
+          var list = current[groupId] || [];
+          if (list.indexOf(gameId) === -1) {
+            list.push(gameId);
+            current[groupId] = list;
+            saveGames(current);
+            renderPublishedGames(current);
+            alert('Мини-игра опубликована для: ' + (GROUP_TITLES[groupId]||groupId));
+          } else {
+            alert('Эта мини-игра уже опубликована для выбранной группы.');
+          }
+        });
+      }
+
+      var logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem(STORAGE_KEY_USER);
+          window.location.href = 'index.html';
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  })();
   </script>
 </body>
 </html>

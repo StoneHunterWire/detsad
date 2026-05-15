@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <title>МБОУ «Апельсин» — Модерация заданий</title>
+  <meta name="description" content="Модерация заданий воспитателей администратором.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="theme.js" defer></script>
+</head>
+<body class="is-authenticated role-admin admin-page">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-circle">
+          <img class="logo-img" src="assets/logo.png" alt="Эмблема детского сада «Апельсин»">
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">МБОУ «Апельсин»</span>
+          <span class="logo-subtitle">Администратор</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <nav class="admin-subnav" aria-label="Разделы администратора">
+          <a href="admin.html">Учётные записи</a>
+          <a href="admin-news.html">Новости</a>
+          <a href="admin-moderation.html" aria-current="page">Модерация</a>
+        </nav>
+        <button type="button" class="btn btn-theme" data-theme-toggle aria-label="Тёмная тема" title="Тёмная тема"><span class="theme-toggle-icon" aria-hidden="true">🌙</span></button>
+        <button type="button" id="logout-btn" class="btn btn-logout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h1 class="admin-page-title">Модерация заданий</h1>
+        <p class="form-note admin-page-lead">Здесь отображаются задания, отправленные воспитателями на проверку. Одобрите задание или отклоните с указанием причины.</p>
+
+        <div class="info-panel" style="margin-top: 16px;">
+          <h2>Ожидают проверки</h2>
+          <ul id="pending-list" class="teacher-manage-list"></ul>
+        </div>
+
+        <div class="info-panel" style="margin-top: 16px;">
+          <h2>История решений</h2>
+          <ul id="history-list" class="teacher-manage-list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="reject-modal" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="reject-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 id="reject-modal-title" class="modal-title">Отклонить задание</h2>
+        <button type="button" class="btn btn-small btn-logout modal-close" id="close-reject-modal" aria-label="Закрыть">×</button>
+      </div>
+      <form id="reject-form" class="task-form">
+        <div class="field">
+          <label for="reject-reason">Укажите ошибки или замечания</label>
+          <textarea id="reject-reason" rows="4" required placeholder="Опишите, что нужно исправить..."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" id="cancel-reject-modal">Отмена</button>
+          <button type="submit" class="btn btn-small btn-danger-outline">Отклонить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-block">
+        <h3>МБОУ «Апельсин»</h3>
+        <p>Панель администратора — модерация заданий.</p>
+      </div>
+      <div class="footer-block">
+        <h3>Контакты</h3>
+        <p>Адрес, телефон и официальный сайт можно указать здесь.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© <span id="year"></span> МБОУ «Апельсин»</span>
+        <span>Модерация</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    var STORAGE_KEY_USER = 'mbouApelsinUser';
+    var STORAGE_KEY_MODERATION = 'mbouApelsinTaskModeration';
+    var GROUP_TITLES = { yasel: 'Ясельная', middle: 'Средняя', senior: 'Старшая' };
+    var rejectingTaskId = null;
+
+    function setYear() {
+      var el = document.getElementById('year');
+      if (el) el.textContent = new Date().getFullYear();
+    }
+    function loadUser() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY_USER)); } catch(e) { return null; }
+    }
+    function loadModeration() {
+      try { var r = localStorage.getItem(STORAGE_KEY_MODERATION); return r ? JSON.parse(r) : []; } catch(e) { return []; }
+    }
+    function saveModeration(list) {
+      try { localStorage.setItem(STORAGE_KEY_MODERATION, JSON.stringify(list)); } catch(e) {}
+    }
+    function escapeHtml(s) {
+      var d = document.createElement('div');
+      d.textContent = s == null ? '' : String(s);
+      return d.innerHTML;
+    }
+
+    function openRejectModal(taskId) {
+      rejectingTaskId = taskId;
+      var modal = document.getElementById('reject-modal');
+      if (modal) { modal.hidden = false; document.body.classList.add('modal-open'); }
+      var ta = document.getElementById('reject-reason');
+      if (ta) { ta.value = ''; setTimeout(function(){ ta.focus(); }, 50); }
+    }
+    function closeRejectModal() {
+      rejectingTaskId = null;
+      var modal = document.getElementById('reject-modal');
+      if (modal) { modal.hidden = true; document.body.classList.remove('modal-open'); }
+    }
+
+    function approveTask(taskId) {
+      var all = loadModeration();
+      all = all.map(function(t) {
+        if (t.id === taskId) { t.status = 'approved'; t.rejectReason = ''; t.reviewedAt = Date.now(); }
+        return t;
+      });
+      saveModeration(all);
+      renderLists();
+    }
+
+    function rejectTask(taskId, reason) {
+      var all = loadModeration();
+      all = all.map(function(t) {
+        if (t.id === taskId) { t.status = 'rejected'; t.rejectReason = reason; t.reviewedAt = Date.now(); }
+        return t;
+      });
+      saveModeration(all);
+      renderLists();
+    }
+
+    function renderLists() {
+      var pendingList = document.getElementById('pending-list');
+      var historyList = document.getElementById('history-list');
+      if (!pendingList || !historyList) return;
+
+      var all = loadModeration();
+      var pending = all.filter(function(t) { return t.status === 'pending'; });
+      var reviewed = all.filter(function(t) { return t.status === 'approved' || t.status === 'rejected'; });
+
+      pendingList.innerHTML = '';
+      if (!pending.length) {
+        var li = document.createElement('li');
+        li.textContent = 'Нет заданий на проверке.';
+        pendingList.appendChild(li);
+      } else {
+        pending.forEach(function(task) {
+          var li = document.createElement('li');
+          li.className = 'teacher-manage-item';
+
+          var main = document.createElement('div');
+          main.className = 'admin-users-item-main';
+          main.innerHTML = '<strong>' + escapeHtml(task.title) + '</strong>' +
+            ' <span class="text-muted">(' + escapeHtml(task.teacherName || '') + ')</span>' +
+            ' — ' + (GROUP_TITLES[task.group] || '') +
+            (task.fileName ? ' <span class="text-muted">[файл: ' + escapeHtml(task.fileName) + ']</span>' : '');
+          li.appendChild(main);
+
+          if (task.description) {
+            var desc = document.createElement('div');
+            desc.className = 'teacher-manage-preview';
+            desc.textContent = task.description;
+            li.appendChild(desc);
+          }
+
+          if (task.fileDataUrl && task.fileName) {
+            var link = document.createElement('a');
+            link.href = task.fileDataUrl;
+            link.download = task.fileName;
+            link.className = 'link';
+            link.textContent = 'Скачать файл';
+            link.style.marginRight = '12px';
+            li.appendChild(link);
+          }
+
+          var actions = document.createElement('div');
+          actions.style.cssText = 'display:flex;gap:8px;margin-top:8px;';
+
+          var btnApprove = document.createElement('button');
+          btnApprove.type = 'button';
+          btnApprove.className = 'btn btn-small primary';
+          btnApprove.textContent = 'Одобрить';
+          btnApprove.addEventListener('click', function() {
+            if (confirm('Одобрить задание «' + task.title + '»?')) approveTask(task.id);
+          });
+
+          var btnReject = document.createElement('button');
+          btnReject.type = 'button';
+          btnReject.className = 'btn btn-small btn-danger-outline';
+          btnReject.textContent = 'Отклонить';
+          btnReject.addEventListener('click', function() { openRejectModal(task.id); });
+
+          actions.appendChild(btnApprove);
+          actions.appendChild(btnReject);
+          li.appendChild(actions);
+          pendingList.appendChild(li);
+        });
+      }
+
+      historyList.innerHTML = '';
+      if (!reviewed.length) {
+        var li2 = document.createElement('li');
+        li2.textContent = 'История пуста.';
+        historyList.appendChild(li2);
+      } else {
+        reviewed.sort(function(a,b) { return (b.reviewedAt||0) - (a.reviewedAt||0); });
+        reviewed.forEach(function(task) {
+          var li = document.createElement('li');
+          li.className = 'teacher-manage-item';
+          var statusLabel = task.status === 'approved' ? 'Одобрено' : 'Отклонено';
+          var statusClass = task.status === 'approved' ? 'badge badge-green' : 'badge badge-purple';
+          var main = document.createElement('div');
+          main.className = 'admin-users-item-main';
+          main.innerHTML = '<span class="' + statusClass + '">' + statusLabel + '</span> ' +
+            '<strong>' + escapeHtml(task.title) + '</strong>' +
+            ' <span class="text-muted">(' + escapeHtml(task.teacherName || '') + ')</span>' +
+            ' — ' + (GROUP_TITLES[task.group] || '');
+          li.appendChild(main);
+          if (task.status === 'rejected' && task.rejectReason) {
+            var reason = document.createElement('div');
+            reason.className = 'teacher-manage-preview';
+            reason.style.color = '#b91c1c';
+            reason.textContent = 'Причина: ' + task.rejectReason;
+            li.appendChild(reason);
+          }
+          historyList.appendChild(li);
+        });
+      }
+    }
+
+    function init() {
+      var user = loadUser();
+      if (!user || user.role !== 'admin') { window.location.href = 'index.html'; return; }
+      setYear();
+      renderLists();
+
+      var closeBtn = document.getElementById('close-reject-modal');
+      var cancelBtn = document.getElementById('cancel-reject-modal');
+      var modal = document.getElementById('reject-modal');
+      if (closeBtn) closeBtn.addEventListener('click', closeRejectModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeRejectModal);
+      if (modal) modal.addEventListener('click', function(e) { if (e.target === modal) closeRejectModal(); });
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && modal && !modal.hidden) closeRejectModal(); });
+
+      var rejectForm = document.getElementById('reject-form');
+      if (rejectForm) {
+        rejectForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var reason = document.getElementById('reject-reason').value.trim();
+          if (!reason) { alert('Укажите причину отклонения.'); return; }
+          if (rejectingTaskId) { rejectTask(rejectingTaskId, reason); }
+          closeRejectModal();
+        });
+      }
+
+      var logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem(STORAGE_KEY_USER);
+          window.location.href = 'index.html';
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  })();
+  </script>
+</body>
+</html>
